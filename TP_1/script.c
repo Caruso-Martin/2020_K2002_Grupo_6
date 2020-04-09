@@ -2,44 +2,51 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LENGTH 100
+#define Longitud 100
 
-void readAndProcessFile(FILE *, char [LENGTH/10][LENGTH/10]); 				//Funcion lee el archivo y lo guarda en una matriz
+struct tablaDeSalida{ //Tabla para procesamiento de los estados junto a su estado
+	char valor[10];
+	int estado; //0: No recocido 1: Octal 2: Decimal 3: Hexadecimal
+} registroDeSalida;
 
+void procesarArchivo(FILE *, char[Longitud/10][Longitud/10]); //Funcion lee el archivo y lo guarda en una matriz
+//int detectarTipoEntero(); //Detecta el tipo de entero y devuelve un estado
+//void procesarTipoEntero(); //Procesa la matriz en un struct para el archivo de salida
+//void archivoDeSalida(); //Arma el archivo de salida con los valores y sus respectivos estados
 
 void main(){
-    FILE *file = fopen("testingValues.txt", "r");					//Abre el archivo
-	char numMatrix[LENGTH/10][LENGTH/10] = {{""}};
+    FILE *archivo = fopen("valoresDePrueba.txt", "r");					
+	char matrizNum[Longitud/10][Longitud/10] = {{""}};
 
-	readAndProcessFile(file, numMatrix[LENGTH/10][LENGTH/10]);
+	procesarArchivo(archivo, matrizNum[Longitud/10][Longitud/10]);
 
 	return ;
 }
-void readAndProcessFile(FILE *file, char numMatrix [LENGTH/10][LENGTH/10]){
-	char numArray[LENGTH] = "";
-	int col = -1, row = 0, colArr;									
+void procesarArchivo(FILE *archivo, char matrizNum [Longitud/10][Longitud/10]){ //Procesa el archivo en una matriz 
+	char arrNumArchivo[Longitud] = "";											//de [cantidad de palabras][10 caracteres de longitud]
+	int col = -1, fila = 0, colArr;											
 
-	fseek(file, 0, SEEK_END);							//Ubica el puntero al final del archivo 
-    int fileSize = ftell(file);								//Guarda la cantidad de caracteres
-	fseek(file, 0, SEEK_SET);							//Devuelve el puntero al principio del archivos
+	fseek(archivo, 0, SEEK_END);							
+    int longArchivo = ftell(archivo);						
+	fseek(archivo, 0, SEEK_SET);							
 
-	for(int i = 0; i < fileSize; i++){
-   		fscanf(file, "%c", &numArray[i]);				
-		printf("%c", numArray[i]);
+	for(int i = 0; i < longArchivo; i++){ //Guarda todo el archivo en un arreglo
+   		fscanf(archivo, "%c", &arrNumArchivo[i]);				
+		printf("%c", arrNumArchivo[i]);
 	}
 
-	for (colArr = 0; colArr < LENGTH; colArr++){
+	for (colArr = 0; colArr < Longitud; colArr++){ //Pasa el arreglo a una matriz (mas facil para comparar)
 		col++;
-		if(numArray[colArr] != ','){
-			numMatrix[row][col] = numArray[colArr];
-			printf("%c", numMatrix[row][col]);
+		if(arrNumArchivo[colArr] != ','){ //Usa la coma para determinar una nueva fila
+			matrizNum[fila][col] = arrNumArchivo[colArr];
+			printf("%c", matrizNum[fila][col]);
 		} else {
 			col = -1;
-			row++;
+			fila++;
 			printf("\n");
 		}	
 	}
 
-    fclose(file);										//Cerra el archivo
+    fclose(archivo);										
 }    
 
