@@ -2,51 +2,49 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define Longitud 100
+#define longitudMaxInt 6 //El mayor int es +32,767
+#define cantPalabras 13
 
-struct tablaDeSalida{ //Tabla para procesamiento de los estados junto a su estado
-	char valor[10];
-	int estado; //0: No recocido 1: Octal 2: Decimal 3: Hexadecimal
-} registroDeSalida;
+struct tablaDeSalida{ 
+	int estado; 
+	char valor[longitudMaxInt];
 
-void procesarArchivo(FILE *, char[Longitud/10][Longitud/10]); //Funcion lee el archivo y lo guarda en una matriz
-//int detectarTipoEntero(); //Detecta el tipo de entero y devuelve un estado
-//void procesarTipoEntero(); //Procesa la matriz en un struct para el archivo de salida
-//void archivoDeSalida(); //Arma el archivo de salida con los valores y sus respectivos estados
+} registroDeSalida[cantPalabras];
+
+void llenarRegistro(FILE *, struct tablaDeSalida *); 
+int automataEstado(char[]);
+void archivoSalida(struct tablaDeSalida *);
 
 void main(){
-    FILE *archivo = fopen("valoresDePrueba.txt", "r");					
-	char matrizNum[Longitud/10][Longitud/10] = {{""}};
-
-	procesarArchivo(archivo, matrizNum[Longitud/10][Longitud/10]);
-
-	return ;
+	FILE * archivoDeEntrada = fopen("valoresDePrueba.txt", "r");					
+ 
+	llenarRegistro(archivoDeEntrada, registroDeSalida);
+	/*for (int i = 0; i < cantPalabras; i++){
+		registroDeSalida[i].estado = automataEstado(registroDeSalida[i].valor);
+	}*/
+	//archivoSalida(registroDeSalida);
+		
 }
-void procesarArchivo(FILE *archivo, char matrizNum [Longitud/10][Longitud/10]){ //Procesa el archivo en una matriz 
-	char arrNumArchivo[Longitud] = "";											//de [cantidad de palabras][10 caracteres de longitud]
-	int col = -1, fila = 0, colArr;											
+void llenarRegistro(FILE * archivoEntrada, struct tablaDeSalida * registroDeSalida){
+	int j = 0, k = -1;
+	fseek(archivoEntrada, 0, SEEK_END);							
+    int longitudArchivo = ftell(archivoEntrada);						
+	fseek(archivoEntrada, 0, SEEK_SET);
 
-	fseek(archivo, 0, SEEK_END);							
-    int longArchivo = ftell(archivo);						
-	fseek(archivo, 0, SEEK_SET);							
+	for(int i = 0; i < longitudArchivo; i++){
+		k++;
+		fscanf(archivoEntrada, "%c", &registroDeSalida[j].valor[k]);
 
-	for(int i = 0; i < longArchivo; i++){ //Guarda todo el archivo en un arreglo
-   		fscanf(archivo, "%c", &arrNumArchivo[i]);				
-		printf("%c", arrNumArchivo[i]);
+		if(registroDeSalida[j].valor[k] == ','){
+			registroDeSalida[j].valor[k] = '\0'; //Borra la coma
+			j++; //Nueva palabra
+			k=-1; //Resetea la columna de llenado del array valor
+		}  
 	}
+	printf("%s\n",registroDeSalida[12].valor);
+	printf("%c\n",registroDeSalida[12].valor[3]);
 
-	for (colArr = 0; colArr < Longitud; colArr++){ //Pasa el arreglo a una matriz (mas facil para comparar)
-		col++;
-		if(arrNumArchivo[colArr] != ','){ //Usa la coma para determinar una nueva fila
-			matrizNum[fila][col] = arrNumArchivo[colArr];
-			printf("%c", matrizNum[fila][col]);
-		} else {
-			col = -1;
-			fila++;
-			printf("\n");
-		}	
-	}
-
-    fclose(archivo);										
-}    
-
+	fclose(archivoEntrada);
+} 
+//int automataEstado(struct tablaDeSalida *){} //Se le pasa una fila y devuelve un estado
+//void archivoSalida(struct tablaDeSalida *){}
