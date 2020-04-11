@@ -1,0 +1,16 @@
+|  Valor  | Tipo de entero |
+| ------- | -------------- |
+|  037654 |  No reconocido |
+|   01245 |  No reconocido |
+|    0000 |  No reconocido |
+|      0a |  No reconocido |
+|    0989 |  No reconocido |
+|   23456 |  No reconocido |
+|   17890 |  No reconocido |
+|   123af |  No reconocido |
+|   567bc |  No reconocido |
+|  0xaAF9 |  No reconocido |
+|  0X123C |  No reconocido |
+|  0Xffww |  No reconocido |
+| 0xAAMl
+ |  No reconocido |
