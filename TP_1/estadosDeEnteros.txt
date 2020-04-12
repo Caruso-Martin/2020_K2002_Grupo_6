@@ -1,8 +1,8 @@
 |  Valor  | Tipo de entero |
 | ------- | -------------- |
-|  037654 |  No reconocido |
-|   01245 |  No reconocido |
-|    0000 |  No reconocido |
+|  037654 |    Hexadecimal |
+|   01245 |        Decimal |
+|    0000 |          Octal |
 |      0a |  No reconocido |
 |    0989 |  No reconocido |
 |   23456 |  No reconocido |

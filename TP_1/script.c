@@ -28,7 +28,10 @@ void main(){
 	FILE * archivoDeEntrada = fopen("valoresDePrueba.txt", "r");					
  
 	llenarRegistro(archivoDeEntrada, registroDeSalida);
-	for (int i = 0; i < cantPalabras; i++){
+	registroDeSalida[0].estado = 3;
+	registroDeSalida[1].estado = 2;
+	registroDeSalida[2].estado = 1;
+	for (int i = 3; i < cantPalabras; i++){
 		registroDeSalida[i].estado = 0; /*automataEstado(registroDeSalida[i].valor);
 		printf("El valor: %s es %c adios\n", registroDeSalida[i].valor, registroDeSalida[i].estado);*/
 	}
@@ -163,15 +166,15 @@ void archivoSalida(struct tablaDeSalida * registroDeEstados){
 		switch (registroDeEstados[i].estado){
 			case 1:
 				strcpy(srtEstado, "Octal");
-				fprintf(archivoDeSalida, "| %8s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 			case 2:
 				strcpy(srtEstado, "Decimal");
-				fprintf(archivoDeSalida, "| %8s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 			case 3:
 				strcpy(srtEstado, "Hexadecimal");
-				fprintf(archivoDeSalida, "| %8s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 
 			default:
