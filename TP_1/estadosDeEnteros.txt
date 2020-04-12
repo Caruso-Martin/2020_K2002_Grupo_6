@@ -1,16 +1,16 @@
 |  Valor  | Tipo de entero |
 | ------- | -------------- |
-|  037654 |    Hexadecimal |
-|   01245 |        Decimal |
+|  037654 |          Octal |
+|   01245 |          Octal |
 |    0000 |          Octal |
-|      0a |  No reconocido |
-|    0989 |  No reconocido |
-|   23456 |  No reconocido |
-|   17890 |  No reconocido |
-|   123af |  No reconocido |
-|   567bc |  No reconocido |
-|  0xaAF9 |  No reconocido |
-|  0X123C |  No reconocido |
-|  0Xffww |  No reconocido |
+|      0a |          Octal |
+|    0989 |  No reconocido | 
+|   23456 |        Decimal |
+|    7890 |        Decimal |
+|   123af |  No reconocido | 
+|   567bc |  No reconocido | 
+|  0xaAF9 |    Hexadecimal |
+|  0X123C |    Hexadecimal |
+|  0Xffww |  No reconocido | 
 | 0xAAMl
- |  No reconocido |
+ |  No reconocido | 
