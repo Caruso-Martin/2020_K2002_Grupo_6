@@ -23,7 +23,7 @@ void llenarRegistro(FILE *, struct tablaDeSalida *);
 int esOctal(char[]);
 int esDecimal(char[]);
 int esHexadecimal(char[]);
-int automataEstado(char[]);
+int automataImprovisado(char[]);
 void archivoSalida(struct tablaDeSalida *);
 
 void main(){
@@ -31,9 +31,9 @@ void main(){
  
 	llenarRegistro(archivoDeEntrada, registroDeSalida);
 	
-	for (int i = 0; i < cantPalabras; i++){
-		registroDeSalida[i].estado = automataEstado(registroDeSalida[i].valor);
-	}
+	/*for (int i = 0; i < cantPalabras; i++){
+		registroDeSalida[i].estado = automataImprovisado(registroDeSalida[i].valor);
+	}*/
 
 	archivoSalida(registroDeSalida);	
 }
@@ -104,7 +104,7 @@ int esHexadecimal(char palabra[]){
 	return estado;
 }
 // 0: No reconocido, 1: Octal, 2: Decimal, 3: Hexadecimal
-int automataEstado(char palabra[]){
+int automataImprovisado(char palabra[]){
 	int estado = 0;
 
 	if(palabra[0] == '0'){
