@@ -3,7 +3,7 @@
 |  037654 |          Octal |
 |   01245 |          Octal |
 |    0000 |          Octal |
-|      0a |          Octal |
+|      0a |  No reconocido | 
 |    0989 |  No reconocido | 
 |   23456 |        Decimal |
 |    7890 |        Decimal |

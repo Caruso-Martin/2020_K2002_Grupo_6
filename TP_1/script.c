@@ -25,8 +25,20 @@ int esDecimal(char[]);
 int esHexadecimal(char[]);
 int automataImprovisado(char[]);
 void archivoSalida(struct tablaDeSalida *);
+int automataFinitoDeterministico(char[]);
+int obtenerValor(char);
+void archivoSalida2(struct tablaDeSalida *);
+
+int tablaDeTransicion[6][6] = 	{{1,5,5,0,0,0},
+								 {4,4,0,2,0,0},
+								 {3,3,3,0,3,0},
+								 {3,3,3,0,3,0},
+								 {4,4,0,0,0,0},
+								 {5,5,5,0,0,0}};
+	//Los 0 se usan para representar la accion nula en el automata
 
 void main(){
+	
 	FILE * archivoDeEntrada = fopen("valoresDePrueba.txt", "r");					
  
 	llenarRegistro(archivoDeEntrada, registroDeSalida);
@@ -34,8 +46,11 @@ void main(){
 	/*for (int i = 0; i < cantPalabras; i++){
 		registroDeSalida[i].estado = automataImprovisado(registroDeSalida[i].valor);
 	}*/
-
-	archivoSalida(registroDeSalida);	
+	for (int i = 0; i< cantPalabras; i++){
+		registroDeSalida[i].estado = automataFinitoDeterministico(registroDeSalida[i].valor);
+	}
+	//archivoSalida(registroDeSalida);
+	archivoSalida2(registroDeSalida);	
 }
 // Pasado un archivo y un arreglo de estructura, rellena el arreglo dentro del un arreglo de estructura
 void llenarRegistro(FILE * archivoEntrada, struct tablaDeSalida * registroDeSalida){
@@ -134,6 +149,72 @@ void archivoSalida(struct tablaDeSalida * registroDeEstados){
 				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 			case 2:
+				strcpy(srtEstado, "Decimal");
+				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				break;
+			case 3:
+				strcpy(srtEstado, "Hexadecimal");
+				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				break;
+
+			default:
+				strcpy(srtEstado, "No reconocido");
+				fprintf(archivoDeSalida, "| %7s | %14s | \n", registroDeEstados[i].valor, srtEstado);	
+				break;
+		}
+	}
+}
+// Lee los valores del vector palabra[] y determina usando tablaDeTransicion[] si realiza acciones validas
+// Si es una palabra reconocida devolvera, 3:Hexadecimal, 4:Octal, 5:Decimal. Cualquier otro valor es no reconocida
+int automataFinitoDeterministico(char palabra[]){
+	int i=0;
+	int fila=0;
+	int columna;
+	while(palabra[i]!='\0'){
+		columna = obtenerValor(palabra[i]);
+		fila = tablaDeTransicion[fila][columna];
+		if(fila == 0){ /*Si el valor de columna es 0 entonces se entiende que es una accion no valida y devuelve ese valor*/
+			return fila;
+			}
+		i++;
+	}
+	return fila;
+}
+//Lee un caracter del vector palabra[] y devuelve el valor numerico de a que fila pertenece, 
+// 0: 0, 1:[1-7], 2:[8-9], 3:[xX], 4:[a-f][A-F], 5:No reconocido
+int obtenerValor(char x){
+	if(x > '0' && x < '8'){
+		return 1;
+		}
+	if(x > '7' && x <= '9'){
+		return 2;
+		}
+	if(x == 'x' || x == 'X'){
+		return 3;
+		}
+	if((x >= 'A' && x <= 'F') || (x >= 'a' && x <= 'f')){
+		return 4;
+		}
+	if(x == '0'){
+		return 0;
+		}
+	return 5;
+}
+//Modificacion a archivoSalida para que use los estados devueltos por automataFinitoDeterministico
+void archivoSalida2(struct tablaDeSalida * registroDeEstados){
+	FILE * archivoDeSalida = fopen("estadosDeEnteros.txt", "w");					
+	int i = 0;
+	char srtEstado [14];
+	
+	fprintf(archivoDeSalida, "|  Valor  | Tipo de entero |\n| ------- | -------------- |\n");
+
+	for (int i = 0; i < cantPalabras; i++){
+		switch (registroDeEstados[i].estado){
+			case 4:
+				strcpy(srtEstado, "Octal");
+				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				break;
+			case 5:
 				strcpy(srtEstado, "Decimal");
 				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
