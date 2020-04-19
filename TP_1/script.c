@@ -5,14 +5,6 @@
 #define longitudMaxInt 6 // El mayor int es +32,767
 #define cantPalabras 13
 
-#define q0 0
-#define q1 1
-#define q2 2
-#define q3 3
-#define q4 4
-#define q5 5
-#define q6 6
-
 struct tablaDeSalida{ 
 	int estado; 
 	char valor[longitudMaxInt];
@@ -20,20 +12,25 @@ struct tablaDeSalida{
 } registroDeSalida[cantPalabras];
 
 void llenarRegistro(FILE *, struct tablaDeSalida *); 
-int esOctal(char[]);
-int esDecimal(char[]);
-int esHexadecimal(char[]);
-int automataImprovisado(char[]);
+
+int esCero(char);
+int estaEntreUnoSiete(char);
+int esOchoNueve(char);
+int esX(char);
+int estaEntreAyF(char);
+int automataEnteros(char[]);
+
 void archivoSalida(struct tablaDeSalida *);
+
 
 void main(){
 	FILE * archivoDeEntrada = fopen("valoresDePrueba.txt", "r");					
  
 	llenarRegistro(archivoDeEntrada, registroDeSalida);
-	
-	/*for (int i = 0; i < cantPalabras; i++){
-		registroDeSalida[i].estado = automataImprovisado(registroDeSalida[i].valor);
-	}*/
+
+	for (int i = 0; i < cantPalabras; i++){
+		registroDeSalida[i].estado = automataEnteros(registroDeSalida[i].valor);
+	}
 
 	archivoSalida(registroDeSalida);	
 }
@@ -62,64 +59,35 @@ void llenarRegistro(FILE * archivoEntrada, struct tablaDeSalida * registroDeSali
 
 	fclose(archivoEntrada);
 } 
-int esOctal(char palabra[]){
-	int estado = 1, i = 1; 
-
-	if (palabra[0] == '0'){
-		while(palabra[i+1] != '\0'){
-			if (!(palabra[i] >= '0' && palabra[i] <= '7'))
-				return 0;
-			i++;
-		}
-	}
-	
-	return estado;
+int esCero(char caracter){
+	return caracter == '0';
 }
-int esDecimal(char palabra[]){
-	int estado = 2, i = 0; 
-
-	if (palabra[0] >= '1' && palabra[0] <= '9'){
-		while(palabra[i+1] != '\0'){
-			if (!(palabra[i] >= '0' && palabra[i] <= '9'))
-				return 0;
-			i++;
-		}
-	}
-	
-	return estado;
+int estaEntreUnoSiete(char caracter){
+	return caracter >= '1' && caracter <= '7';
 }
-int esHexadecimal(char palabra[]){
-	int estado = 3, i = 2; 
-
-	if (palabra[0] == '0' && (palabra[1] == 'X' || palabra[1] == 'x')){
-		while(palabra[i+1] != '\0'){
-			if (!((palabra[i] >= '0' && palabra[i] <= '9') || 
-			(palabra[i] >= 'A' && palabra[i] <= 'F') || 
-			(palabra[i] >= 'a' && palabra[i] <= 'f')))
-				return 0;
-			i++;
-		}
-	}
-
-	return estado;
+int esOchoNueve(char caracter){
+	return caracter == '8' || caracter == '9';
+}
+int esX(char caracter){
+	return caracter == 'x' || caracter == 'X';
+}
+int estaEntreAyF(char caracter){
+	return (caracter >= 'a' && caracter <= 'f') || (caracter >= 'A' && caracter <= 'F');
 }
 // 0: No reconocido, 1: Octal, 2: Decimal, 3: Hexadecimal
-int automataImprovisado(char palabra[]){
-	int estado = 0;
+int automataEnteros(char palabra[]){
+	int f = 0, c = 0, l = 0;
+	int matrizTTransicion[7][6] = { 
+		{2, 1, 1, 6, 6, 6},// Trifurcacion: oct/hex, dec y n/r
+		{1, 1, 1, 6, 6, 6},// Verificacion decimal 
+		{5, 5, 6, 3, 6, 6},// Trifurcacion: oct, hex y n/r
+		{4, 4, 4, 6, 4, 4},// Verificacion hexadecimal (primer caracter obligatorio)
+		{4, 4, 4, 6, 4, 4},// Verificacion hexadecimal
+		{5, 5, 6, 6, 6, 6},// Verificacion octal
+		{6, 6, 6, 6, 6, 6} // ***Duda: ¿es realmente necesaria esta fila?
+	};	
 
-	if(palabra[0] == '0'){
-		if(palabra[1] == 'x' || palabra[1] == 'X'){
-			estado = esHexadecimal(palabra);
-		} else {
-			estado = esOctal(palabra);
-		}
-	} else{
-		if(palabra[0] >= '1' || palabra[0] <= '9')
-			estado = esDecimal(palabra);
-	}
-
-	return estado;
-} 
+}
 void archivoSalida(struct tablaDeSalida * registroDeEstados){
 	FILE * archivoDeSalida = fopen("estadosDeEnteros.txt", "w");					
 	int i = 0;
