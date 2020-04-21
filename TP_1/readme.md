@@ -1,18 +1,17 @@
-# UTN - FRBA
+# TP1: AFD de enteros  
+## GRUPO 6  
+### Integrantes: 
+* Caruso Martín
+* Kuljich Pedro 
+* Lee Alex
+* Oreste Cristian
+* Riquelme Blaffet Pablo
 
+## Recomendaciones
+* Todo valor de prueba escrito en valoresDePrueba.txt debe ser escrito sin espacios y seguido de una coma para su correcto funcionamiento (incluso el ultimo valor debe estar seguido de una coma)  
 
-## Sintaxis y Semántica de los Lenguaje
-### Trabajo Práctico n° 1 - Autómata Finito Determinístico para Constantes Enteras 
-
-**Implementar en C** un programa que permita reconocer y **clasificar las distintas de constantes enteras de C (Decimal, Octal, Hexadecimal).** El mismo deberá leer palabras separadas por **“,”** de un **archivo de entrada** (.txt) y **generar un archivo de salida** (.txt) donde indique qué tipo de constante entera es cada palabra leída o si no fue reconocida. El programa debe contemplar la implementación de un autómata finito determinístico (AFD) para el reconocimiento y clasificación de palabras según estado final. 
-
-La entrega de este trabajo práctico no es obligatoria, su **fecha límite para consulta, entrega y revisión es el día domingo 26 de abril.** Luego de esa fecha, no se aceptarán más trabajos, y toda consulta referida quedará para la defensa final que será en el mes de noviembre.
-
-El **entorno de programación queda a criterio de cada grupo de trabajo** (Eclipse, Dev, Codeblocks, Visual Studio Code). 
-
-Formará parte de la **entrega el archivo fuente (.c)** y **el archivo ejecutable (.exe)**.
-
-La **entrega será a través de una tarea dentro del aula virtual** adjuntando el archivo fuente (.c) y el archivo ejecutable (.exe). En caso de haber complicaciones, evaluar la posibilidad de agregar todo a un archivo comprimido (.rar).
-
-Muchos éxitos =)
-
+### Cantidades Maximas 
+* La cantidad de valores ingresables en valoresDePrueba.txt tiene un maximo de 13 palabra, a partir del 14va no se leera  		
+* La cantidad de caracteres por palabra posee un maximo de 12 letras, a partir del 13va no se leera/mostrara en el archivo estadosDeEnteros.txt 
+* En caso de querer aumentar dichas cantidades, es posible mediante las constantes cantPalabras y longitudMaxInt, respectivamente.   
+* Pequeña advertencia: en caso de aumentar el valor por defecto de longitudMaxInt, sepa que la funcion que prepara el archivo de salida no esta preparada para modificar el valor de caracteres que se muestran por defecto (12), por ende, no se veran

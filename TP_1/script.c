@@ -1,9 +1,10 @@
-/*TP AFD - GRUPO 6 - Integrantes: Caruso Martín; Kuljich Pedro; Lee Alex; Oreste Cristian; Riquelme Blaffet Pablo*/
+/*TP AFD - GRUPO 6 - Integrantes: Caruso Martín, Kuljich Pedro, Lee Alex, Oreste Cristian, Riquelme Blaffet Pablo*/
 /* Recomendaciones:
 -	SIEMPRE ESCRIBIR LAS PALABRAS A EVALUAR SEGUIDAS DE UNA COMA
 -	NO USAR ESPACIOS  
--	Usar 13 palabras de prueba como maximo, a partir del 14 no se leera o modificar cantPalabras 		
--	Las palabras mayores a 7 caracteres no mostraran el octavo caracter en el archivo de salida pero si lo leera
+-	Usar 13 palabras de prueba como maximo, a partir del 14 no se leera / modificar cantPalabras si quiere mas palabras 		
+-	Usar palabras de 12 caracteres como maximo, a partir del 13 no se leera / modificar longitudMaxInt si quiere mas palabras   
+- 	En caso de modificar longitudMaxInt, sepa que no se mostraran mas de 12 caracteres
 */
 
 #include <stdio.h>
@@ -11,7 +12,7 @@
 #include <string.h>
 
 #define cantPalabras 13		
-#define longitudMaxInt 7	
+#define longitudMaxInt 12	
 
 struct tablaDeSalida{ 
 	int estado; 
@@ -121,26 +122,26 @@ void archivoSalida(struct tablaDeSalida * registroDeEstados){
 	int i = 0;
 	char srtEstado [14];
 	
-	fprintf(archivoDeSalida, "|  Valor  | Tipo de entero |\n| ------- | -------------- |\n");
+	fprintf(archivoDeSalida, "|     Valor     | Tipo de entero |\n| ------------- | -------------- |\n");
 
 	for (int i = 0; i < cantPalabras; i++){
 		switch (registroDeEstados[i].estado){
 			case 4:
 				strcpy(srtEstado, "Octal");
-				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %13s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 			case 5:
 				strcpy(srtEstado, "Decimal");
-				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %13s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 			case 3:
 				strcpy(srtEstado, "Hexadecimal");
-				fprintf(archivoDeSalida, "| %7s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %13s | %14s |\n", registroDeEstados[i].valor, srtEstado);	
 				break;
 
 			default:
 				strcpy(srtEstado, "No reconocido");
-				fprintf(archivoDeSalida, "| %7s | %14s | \n", registroDeEstados[i].valor, srtEstado);	
+				fprintf(archivoDeSalida, "| %13s | %14s | \n", registroDeEstados[i].valor, srtEstado);	
 				break;
 		}
 	}

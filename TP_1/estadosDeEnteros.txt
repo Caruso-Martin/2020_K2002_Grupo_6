@@ -1,15 +1,15 @@
-|  Valor  | Tipo de entero |
-| ------- | -------------- |
-|  137654 |        Decimal |
-|   01245 |          Octal |
-|    0000 |          Octal |
-|      0a |  No reconocido | 
-|    0989 |  No reconocido | 
-|     2s6 |  No reconocido | 
-| 7922299 |        Decimal |
-| 0x123af |    Hexadecimal |
-|   567bc |  No reconocido | 
-|  0xaAF9 |    Hexadecimal |
-|  0X123C |    Hexadecimal |
-|  0Xffww |  No reconocido | 
-|      aa |  No reconocido | 
+|     Valor     | Tipo de entero |
+| ------------- | -------------- |
+|          3456 |        Decimal |
+|  0xAFDDD12323 |    Hexadecimal |
+|       0aaa000 |  No reconocido | 
+|       asas222 |  No reconocido | 
+|         09189 |  No reconocido | 
+|           2s6 |  No reconocido | 
+|       7922299 |        Decimal |
+|       0x123af |    Hexadecimal |
+|         567bc |  No reconocido | 
+|        0xaAF9 |    Hexadecimal |
+|        0X123C |    Hexadecimal |
+|        0Xffww |  No reconocido | 
+|            aa |  No reconocido | 
