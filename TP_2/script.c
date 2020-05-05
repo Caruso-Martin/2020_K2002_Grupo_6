@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define RESET           "\033[0m"
-#define RED             "\033[31m" 
+#define textoEnBlanco   "\033[0m"
+#define textoEnRojo     "\033[31m" 
 #define largoExpresion  100
 
 struct estadoTabla {
@@ -23,37 +23,41 @@ int automataFinitoPila(char[]);
 void ubicacionError(char[], int); 
 
 void main(){
-    char expresion[largoExpresion]; 
-
-    while (expresion != "@"){ // @ es un valor sentinela
+    char expresion[largoExpresion] = "";
+    int i = 0;
+    while (expresion[0] != ';'){ // ';' es un valor sentinela
         procesarCadena(expresion);
+
         int esSintacticamenteCorrecta = automataFinitoPila(expresion);
 
         if(!esSintacticamenteCorrecta){
-            printf("La expresion ingresada NO es sintacticamente correcta");
-            //ubicacionError(expresion[], esSintacticamenteCorrecta); 
+            printf("La expresion ingresada NO es sintacticamente correcta\n");
+            //ubicacionError(expresion, esSintacticamenteCorrecta); //TENER CUIDADO
         } else {
-            printf("La expresion ingresada es sintacticamente correcta");
+            printf("La expresion ingresada es sintacticamente correcta\n");
         }
-
     }
+    printf("Salio del while");
+
 }
-void procesarCadena(char expresion[]){
-    int i = 0, j = 0; 
-    expresion[largoExpresion] = "";
-    printf("Ingrese una expresion: ");
-    scanf("%s\0", expresion);
+void procesarCadena(char expresion[]){ 
+    char texto[largoExpresion];
+    int i = 0, j = 0;
 
-    while(expresion[i] != '\0'){
-        if(expresion[i] == " "){
-            while(expresion[j] != '\0'){
-                expresion[j] = expresion[j+1];
-                j++;
-            }
+    printf("Ingreso expresion: ");
+    gets(texto);
+
+    while (texto[j] != '\0'){
+        if (texto[j] != ' ') {
+          expresion[i] = texto[j];
+           i++;
         }
-        i++;
-        j = i;
+        j++;
     }
+
+    expresion[i] = '\0';
+ 
+    printf("Expresion sin espacios: %s\n", expresion);
 }
 void push(){
     // Relacionado con (
@@ -80,13 +84,15 @@ int automataFinitoPila(char expresion[]){ //Devuelve la posicion del primer erro
 }
 void ubicacionError(char expresion[], int posicionError){
     int i = 0;
-    printf("El error se encontro en la posicion %d: ", posicionError);
+    printf("El error se encontro en la posicion %d - ", posicionError);
     while(expresion[i] != '\0'){
-        if(expresion[i] != posicionError){
-            printf("%c", expresion[i]);
+        if(i != posicionError){
+            printf("%c" , expresion[i]);
         } else {
-            printf(RED "%c" RESET, expresion[i]);
+            printf(textoEnRojo "%c" textoEnBlanco, expresion[i]);
         }
+        i++;
     }
+    printf("\n");
     //Uso de color: https://stackoverflow.com/questions/1961209/making-some-text-in-printf-appear-in-green-and-red
 }
