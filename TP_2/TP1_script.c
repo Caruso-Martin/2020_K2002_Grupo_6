@@ -17,7 +17,6 @@
 struct tablaDeSalida{ 
 	int estado; 
 	char valor[longitudMaxInt];
-
 } registroDeSalida[cantPalabras];
 
 void llenarRegistro(FILE *, struct tablaDeSalida *); 
@@ -38,7 +37,7 @@ void main(){
  
 	llenarRegistro(archivoDeEntrada, registroDeSalida);
 	
-	for (int i = 0; i< cantPalabras; i++){
+	for (int i = 0; i < cantPalabras; i++){
 		registroDeSalida[i].estado = automataFinitoDeterministico(registroDeSalida[i].valor);
 	}
 
