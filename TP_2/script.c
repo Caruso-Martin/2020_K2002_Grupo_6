@@ -7,19 +7,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define textoEnBlanco   "\033[0m"
-#define textoEnRojo     "\033[31m" 
-#define largoExpresion  100
+#define textoEnBlanco       "\033[0m"
+#define textoEnRojo         "\033[31m" 
+#define largoExpresion      100
+#define tamanioCadenaPush   6
 
 struct tabla {
     int estado; 
-    char cadenaPush[3];
+    char cadenaPush[tamanioCadenaPush];
 };
 
 void procesarCadena(char[]);
-void push(struct tabla, char[]);
-void pop(struct tabla, char[]);
+
+int esCero(char);
+int estaEntreUnoNueve(char);
+int esOperador(char);
+int esPartentesisApertura(char);
+int esPartentesisCierre(char);
+int obtenerValor(char);
+
+int cantLetras(char[]);
+void pop (char[]);
+void push (char[], char[]);
 int automataFinitoPila(char[]);
+
 void ubicacionError(char[], int); 
 
 void main(){
@@ -30,11 +41,11 @@ void main(){
 
         int esSintacticamenteCorrecta = automataFinitoPila(expresion);
 
-        if(esSintacticamenteCorrecta){ //CREO QUE ES AL REVES LOS PRINTF
+        if(esSintacticamenteCorrecta == -1){ //CREO QUE ES AL REVES LOS PRINTF
+            printf("La expresion ingresada es sintacticamente correcta\n");
+        } else {
             printf("La expresion ingresada NO es sintacticamente correcta\n");
             ubicacionError(expresion, esSintacticamenteCorrecta); //TENER CUIDADO
-        } else {
-            printf("La expresion ingresada es sintacticamente correcta\n");
         }
     }
     printf("Salio del while");
@@ -44,7 +55,7 @@ void procesarCadena(char expresion[]){
     char texto[largoExpresion];
     int i = 0, j = 0;
 
-    printf("Ingreso expresion: ");
+    printf("Ingrese expresion: ");
     gets(texto);
 
     while (texto[j] != '\0'){
@@ -59,40 +70,6 @@ void procesarCadena(char expresion[]){
  
     printf("Expresion sin espacios: %s\n", expresion);
 }
-void push(struct tabla estadoSiguiente, char cadenaEnTabla[]){
-    // Relacionado con (
-    // En tabla son las posiciones [0][3] para primer (; [2][3] para segundo o superior
-
-    if(cadenaEnTabla == "-"){
-        estadoSiguiente.cadenaPush[0] == '\0';
-    } else if (cadenaEnTabla[0] != '\0' && cadenaEnTabla != "RR" && cadenaEnTabla != "R$"){
-        for (int i = 0; i < sizeof(estadoSiguiente.cadenaPush); i++){
-            if(estadoSiguiente.cadenaPush[i] == '\0')
-                estadoSiguiente.cadenaPush[i - 1] = cadenaEnTabla[0];
-        } 
-    } else {
-        for (int i = 0; i < sizeof(estadoSiguiente.cadenaPush); i++){
-            if(estadoSiguiente.cadenaPush[i] == '\0'){
-                estadoSiguiente.cadenaPush[i - 1] = cadenaEnTabla[0];
-                estadoSiguiente.cadenaPush[i] = cadenaEnTabla[1];
-                estadoSiguiente.cadenaPush[i+1] = '\0';
-            }
-        } 
-    }
-}
-void pop(struct tabla estadoSiguiente, char cadenaEnTabla[]){
-    // Relacionado con )
-    // En tabla son las posiciones [3][4] para primer ); [4][4] para segundo o superior
-
-    if(cadenaEnTabla[0] == '-'){
-        estadoSiguiente.cadenaPush[0] == '\0';
-    } else {
-        for (int i = 0; i < sizeof(estadoSiguiente.cadenaPush); i++){
-            if(estadoSiguiente.cadenaPush[i] == '\0')
-                estadoSiguiente.cadenaPush[i - 1] == '\0';
-        } 
-    }
-}
 int esCero(char caracter){
 	return caracter == '0';
 }
@@ -103,7 +80,7 @@ int esOperador(char caracter){
 	return caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/';
 }
 int esPartentesisApertura(char caracter){
-	return caracter >= '(';
+	return caracter == '(';
 }
 int esPartentesisCierre(char caracter){
 	return caracter == ')';
@@ -121,34 +98,67 @@ int obtenerValor(char caracter){
 		return 4;
 	return 5; 				// No reconocido
 }
+int cantLetras(char palabra[]){
+    int cantidadLetras = 0;  
+        
+    for(int i = 0; i < strlen(palabra); i++) {  
+        if(palabra[i] != ' ')  
+            cantidadLetras++;  
+    }  
+
+    return cantidadLetras;
+}
+void pop (char cadena[]){
+    for(int i = 1; i <= cantLetras(cadena); i++){
+        cadena[i-1] = cadena[i];
+    }
+}
+void push (char cadenaModificada[], char cadenaModificadora[]){        
+    for (int j = 0; j < cantLetras(cadenaModificadora); j++){
+        for(int i = cantLetras(cadenaModificada); 0 <= i; i--){
+            cadenaModificada[i+1] = cadenaModificada[i];
+            cadenaModificada[i] = ' ';
+        }
+    }    
+    for (int i = 0; i < cantLetras(cadenaModificadora); i++)
+        cadenaModificada[i] = cadenaModificadora[i];
+
+}
 int automataFinitoPila(char expresion[]){ //Devuelve la posicion del primer error encontrado; si no hay, devuelve 0
     struct tabla tablaDeMovimiento[6][5] = {
         {{-1, "-"}, { 1, "$"}, {-1, "-"}, { 2, "R$"}, {-1, "-" }},
         {{ 1, "$"}, { 1, "$"}, { 0, "$"}, {-1,  "-"}, {-1, "-" }},
         {{-1, "-"}, { 3, "R"}, {-1, "-"}, { 2, "RR"}, {-1, "-" }},
-        {{ 4, "R"}, { 4, "R"}, { 3, "R"}, {-1,  "-"}, { 5, '\0'}},
-        {{-1, "-"}, {-1, "-"}, { 3, "R"}, {-1,  "-"}, { 5, '\0'}},
+        {{ 3, "R"}, { 3, "R"}, { 2, "R"}, {-1,  "-"}, { 4, '\0'}},
+        {{-1, "-"}, {-1, "-"}, { 2, "R"}, {-1,  "-"}, { 5, '\0'}},
         {{-1, "-"}, {-1, "-"}, { 0, "$"}, {-1,  "-"}, {-1, "-" }} 
     }; //DE QUE TIPO ES LA TABLA
 	
     struct tabla estadoSiguiente = {0, "$"};
 
-    int i = 0, fila = 0, columna = 0;
+    int i = 0, columna = 0;
 
     while(expresion[i]!='\0'){
 		columna = obtenerValor(expresion[i]); 
 
-        pop(estadoSiguiente, tablaDeMovimiento[fila][columna].cadenaPush);
-        push(estadoSiguiente, tablaDeMovimiento[fila][columna].cadenaPush);
-        
-        fila = estadoSiguiente.estado;
+        pop(estadoSiguiente.cadenaPush);
+               
+        if (columna != 4 || estadoSiguiente.cadenaPush[0] == '-')
+            push(estadoSiguiente.cadenaPush, tablaDeMovimiento[estadoSiguiente.estado][columna].cadenaPush);
 
-		if(estadoSiguiente.cadenaPush[0] == '\0')		// Si el valor de columna es 0 entonces se entiende que es una accion no valida 
+        printf("%2d. Caracter: %c | Posicion tabla - Fila: %2d Columna: %2d | Cadena push: %5s|\n", i, expresion[i], estadoSiguiente.estado, columna, estadoSiguiente.cadenaPush);
+        
+        estadoSiguiente.estado = tablaDeMovimiento[estadoSiguiente.estado][columna].estado;
+
+        if(estadoSiguiente.cadenaPush[0] == '$' && estadoSiguiente.estado == 4)
+            estadoSiguiente.estado = 5;
+
+		if(estadoSiguiente.estado == -1)		// Si el valor de columna es 0 entonces se entiende que es una accion no valida 
 			return i;	    // y devuelve ese valor
 		i++;
 	}
 
-    return 0; 
+    return -1; 
 }
 void ubicacionError(char expresion[], int posicionError){
     int i = 0;

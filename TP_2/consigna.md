@@ -11,11 +11,11 @@ El programa debe contemplar la ​**implementación de un autómata finito de pi
 |    **TT**    |    0    |  [1-9]  | {+, -, *, /} |    (     |         )        |  
 |    :---:     |  :---:  |  :---:  |     :---:    |   :---:  |       :---:      |
 | **(q0, $)**  | -       | (q1, $) | -            | (q0, R$) | -                |
-| **(q1, $)+** | (q1, $) | (q1, $) | (q0, R)      | -        | -                |
+| **(q1, $)+** | (q1, $) | (q1, $) | (q0, $)      | -        | -                |
 | **(q0, R)**  | -       | (q1, R) | -            | (q0, RR) | -                |
-| **(q0, R)**  | (q1, R) | (q1, R) | (q0, R)      | -        | (q2, $\epsilon$) |
+| **(q1, R)**  | (q1, R) | (q1, R) | (q0, R)      | -        | (q2, $\epsilon$) |
 | **(q2, R)**  | -       | -       | (q0, R)      | -        | (q2, $\epsilon$) |
-| **(q2, $)+** | -       | -       | (q0, R)      | -        | -                |
+| **(q2, $)+** | -       | -       | (q0, $)      | -        | -                |
   
 
 Epsilon hace referencia a que no realizan ningún push sobre la pila. Recuerden que siempre se realiza el pop del símbolo de la cima de la pila. El push si es opcional.
