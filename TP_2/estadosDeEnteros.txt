@@ -1,0 +1,15 @@
+|     Valor     | Tipo de entero |
+| ------------- | -------------- |
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 
+|               |  No reconocido | 

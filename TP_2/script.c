@@ -41,14 +41,13 @@ void main(){
 
         int esSintacticamenteCorrecta = automataFinitoPila(expresion);
 
-        if(esSintacticamenteCorrecta == -1){ //CREO QUE ES AL REVES LOS PRINTF
+        if(esSintacticamenteCorrecta == -1){ 
             printf("La expresion ingresada es sintacticamente correcta\n");
         } else {
             printf("La expresion ingresada NO es sintacticamente correcta\n");
-            ubicacionError(expresion, esSintacticamenteCorrecta); //TENER CUIDADO
+            ubicacionError(expresion, esSintacticamenteCorrecta); 
         }
     }
-    printf("Salio del while");
 
 }
 void procesarCadena(char expresion[]){ 
@@ -96,7 +95,7 @@ int obtenerValor(char caracter){
 		return 3;
 	if(esPartentesisCierre(caracter))
 		return 4;
-	return 5; 				// No reconocido
+	return 5; 			
 }
 int cantLetras(char palabra[]){
     int cantidadLetras = 0;  
@@ -124,15 +123,15 @@ void push (char cadenaModificada[], char cadenaModificadora[]){
         cadenaModificada[i] = cadenaModificadora[i];
 
 }
-int automataFinitoPila(char expresion[]){ //Devuelve la posicion del primer error encontrado; si no hay, devuelve 0
+int automataFinitoPila(char expresion[]){ 
     struct tabla tablaDeMovimiento[6][5] = {
         {{-1, "-"}, { 1, "$"}, {-1, "-"}, { 2, "R$"}, {-1, "-" }},
         {{ 1, "$"}, { 1, "$"}, { 0, "$"}, {-1,  "-"}, {-1, "-" }},
         {{-1, "-"}, { 3, "R"}, {-1, "-"}, { 2, "RR"}, {-1, "-" }},
         {{ 3, "R"}, { 3, "R"}, { 2, "R"}, {-1,  "-"}, { 4, '\0'}},
-        {{-1, "-"}, {-1, "-"}, { 2, "R"}, {-1,  "-"}, { 5, '\0'}},
+        {{-1, "-"}, {-1, "-"}, { 2, "R"}, {-1,  "-"}, { 4, '\0'}},
         {{-1, "-"}, {-1, "-"}, { 0, "$"}, {-1,  "-"}, {-1, "-" }} 
-    }; //DE QUE TIPO ES LA TABLA
+    };
 	
     struct tabla estadoSiguiente = {0, "$"};
 
@@ -142,19 +141,34 @@ int automataFinitoPila(char expresion[]){ //Devuelve la posicion del primer erro
 		columna = obtenerValor(expresion[i]); 
 
         pop(estadoSiguiente.cadenaPush);
-               
         if (columna != 4 || estadoSiguiente.cadenaPush[0] == '-')
             push(estadoSiguiente.cadenaPush, tablaDeMovimiento[estadoSiguiente.estado][columna].cadenaPush);
 
-        printf("%2d. Caracter: %c | Posicion tabla - Fila: %2d Columna: %2d | Cadena push: %5s|\n", i, expresion[i], estadoSiguiente.estado, columna, estadoSiguiente.cadenaPush);
+        printf("%2d. Caracter: %c | Posicion tabla - Fila: %2d Columna: %2d ", i, expresion[i], estadoSiguiente.estado, columna);
         
         estadoSiguiente.estado = tablaDeMovimiento[estadoSiguiente.estado][columna].estado;
 
         if(estadoSiguiente.cadenaPush[0] == '$' && estadoSiguiente.estado == 4)
             estadoSiguiente.estado = 5;
 
-		if(estadoSiguiente.estado == -1)		// Si el valor de columna es 0 entonces se entiende que es una accion no valida 
-			return i;	    // y devuelve ese valor
+        printf("| Estado siguiente: %2d | Cadena push: %6s|\n", estadoSiguiente.estado, estadoSiguiente.cadenaPush);
+
+
+		if(estadoSiguiente.estado == -1 || columna == 5 || (estadoSiguiente.cadenaPush[0] != '$' && i == cantLetras(expresion) - 1))		
+			return i;	    
+        
+        if(i == cantLetras(expresion) - 1){
+            switch (columna){
+                case 2:
+                    return i;
+                break;
+                case 3:
+                    return i;
+                break;
+                default:
+                    break;
+            }
+        }
 		i++;
 	}
 
@@ -172,5 +186,4 @@ void ubicacionError(char expresion[], int posicionError){
         i++;
     }
     printf("\n");
-    //Uso de color: https://stackoverflow.com/questions/1961209/making-some-text-in-printf-appear-in-green-and-red
 }
