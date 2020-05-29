@@ -123,7 +123,7 @@ void push (char cadenaModificada[], char cadenaModificadora[]){
         cadenaModificada[i] = cadenaModificadora[i];
 
 }
-int automataFinitoPila(char expresion[]){ 
+int automataFinitoPila(char expresion[]){
     struct tabla tablaDeMovimiento[6][5] = {
         {{-1, "-"}, { 1, "$"}, {-1, "-"}, { 2, "R$"}, {-1, "-" }},
         {{ 1, "$"}, { 1, "$"}, { 0, "$"}, {-1,  "-"}, {-1, "-" }},
@@ -144,31 +144,18 @@ int automataFinitoPila(char expresion[]){
         if (columna != 4 || estadoSiguiente.cadenaPush[0] == '-')
             push(estadoSiguiente.cadenaPush, tablaDeMovimiento[estadoSiguiente.estado][columna].cadenaPush);
 
-        printf("%2d. Caracter: %c | Posicion tabla - Fila: %2d Columna: %2d ", i, expresion[i], estadoSiguiente.estado, columna);
+        //printf("%2d. Caracter: %c | Posicion tabla - Fila: %2d Columna: %2d ", i, expresion[i], estadoSiguiente.estado, columna);
         
         estadoSiguiente.estado = tablaDeMovimiento[estadoSiguiente.estado][columna].estado;
 
         if(estadoSiguiente.cadenaPush[0] == '$' && estadoSiguiente.estado == 4)
             estadoSiguiente.estado = 5;
 
-        printf("| Estado siguiente: %2d | Cadena push: %6s|\n", estadoSiguiente.estado, estadoSiguiente.cadenaPush);
+        //printf("| Estado siguiente: %2d | Cadena push: %6s|\n", estadoSiguiente.estado, estadoSiguiente.cadenaPush);
 
-
-		if(estadoSiguiente.estado == -1 || columna == 5 || (estadoSiguiente.cadenaPush[0] != '$' && i == cantLetras(expresion) - 1))		
+		if(estadoSiguiente.estado == -1 || columna == 5 || (estadoSiguiente.cadenaPush[0] != '$' && i == cantLetras(expresion) - 1) || (i == cantLetras(expresion) - 1 && columna == 2) || (i == cantLetras(expresion) - 1 && columna == 3))		
 			return i;	    
-        
-        if(i == cantLetras(expresion) - 1){
-            switch (columna){
-                case 2:
-                    return i;
-                break;
-                case 3:
-                    return i;
-                break;
-                default:
-                    break;
-            }
-        }
+
 		i++;
 	}
 
