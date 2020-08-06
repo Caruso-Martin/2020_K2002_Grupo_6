@@ -65,7 +65,7 @@ https://drive.google.com/file/d/1BLwHRqoTSqrxAViiIZ1qN8AcLfxFXz95/view
 
 cd TP_3
 
-flex scriptL.l
+flex analizadorLexico.l
 
 gcc lex.yy.c -L "C:\Program Files (x86)\GnuWin32\lib" -lfl
 
