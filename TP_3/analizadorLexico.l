@@ -4,8 +4,8 @@
     #include <stdio.h>
     #include "funcionesUtiles.h"
 
-    struct Listado *palabrasReservadas, *identificadores, *constantes, *literalesCadena, *comentarios, *caracteresPuntuacion, *noReconocidos;
-    int sumatoriaDecimales = 0;
+    struct Listado *palabrasReservadas, *identificadores, *constantes, *literalesCadena, *comentarios, *caracteresPuntuacion, *directivas, *noReconocidos;
+    int sumatoriaDecimales = 0, contadorDeLinea = 1;
 %}
 
 PALABRAS_RESERVADAS (break|continue|default|enum|goto|return|sizeof|typedef|union)
@@ -20,33 +20,33 @@ DIGITO_DECIMAL_SIN_CERO [1-9]
 DIGITO_OCTAL [0-7] 
 DIGITO_HEXADECIMAL [a-fA-F0-9] 
 
-
 SUFIJO_LONG (l|L)
 SUFIJO_ENTERO ({SUFIJO_LONG}|u|U)
-
 
 SUFIJO_REAL ({SUFIJO_LONG}|f|F)
 CONSTANTE_FRACCION (({DIGITO_DECIMAL}*)?"."{DIGITO_DECIMAL}*|{DIGITO_DECIMAL}*)
 PARTE_EXPONENTE (e|E)("+"|"-")?{DIGITO_DECIMAL}*
-
 
 SECUENCIA_ESCAPE_SIMPLE (a|b|f|n|r|t|v|\'|\"|\?|\\)
 
 CARACTER_DE_PUNTUACION (\[|\]|\(|\)|\{|\}|\.|\-\>|\+\+|\-\-|\&|\*|\+|\-|\˜|\!|\/|\%|\<\<|\>\>|\<|\>|\<\=|\>\=|\=\=|\!\=|\ˆ|\||\&\&|\|\||\=|\*\=|\/\=|\%\=|\+\=|\-\=|\<\<\=|\>\>\=|\&\=|\ˆ\=|\|\=|\?|\:|\;|\.\.\.|\,|\#|\#\#)
 
 %%
+\n contadorDeLinea++;;
 {PALABRAS_RESERVADAS} {pushLista(&palabrasReservadas, yytext, 0, yyleng);};
 {TIPO_DE_DATO} {pushLista(&palabrasReservadas, yytext, 1, yyleng);};
 {MODIFICADOR} {pushLista(&palabrasReservadas, yytext, 2, yyleng);};
 {ESPECIFICADOR_DE_ALMACENAMIENTO} {pushLista(&palabrasReservadas, yytext, 3, yyleng);};
 {ESTRUCTURA_DE_CONTROL} {pushLista(&palabrasReservadas, yytext, 4, yyleng);};
 
+\#(include|define) {pushListaSinRepetir(&directivas, yytext, yyleng);};
+
 
 ({LETRA}|"_")({LETRA}|"_"|{DIGITO_DECIMAL})* {pushListaSinRepetir(&identificadores, yytext, yyleng);};
 
 {CARACTER_DE_PUNTUACION}  {pushListaSinRepetir(&caracteresPuntuacion, yytext, yyleng);};
 
-{DIGITO_DECIMAL_SIN_CERO}{DIGITO_DECIMAL}*{SUFIJO_ENTERO}? {pushLista(&constantes, yytext, 0, yyleng);};
+{DIGITO_DECIMAL_SIN_CERO}{DIGITO_DECIMAL}*{SUFIJO_ENTERO}? {pushLista(&constantes, yytext, 0, yyleng); sumatoriaDecimales += conseguirDecimal(yytext, yyleng);};
 0{DIGITO_OCTAL}*{SUFIJO_ENTERO}? {pushLista(&constantes, yytext, 1, yyleng);};
 0[xX]{DIGITO_HEXADECIMAL}+{SUFIJO_ENTERO}? {pushLista(&constantes, yytext, 2, yyleng);};
 ({CONSTANTE_FRACCION}{PARTE_EXPONENTE}?{SUFIJO_REAL}?|{CONSTANTE_FRACCION}{PARTE_EXPONENTE}{SUFIJO_REAL}?) {pushLista(&constantes, yytext, 3, yyleng);};
@@ -58,7 +58,8 @@ CARACTER_DE_PUNTUACION (\[|\]|\(|\)|\{|\}|\.|\-\>|\+\+|\-\-|\&|\*|\+|\-|\˜|\!|\
 \/\/.*  {pushLista(&comentarios, yytext, 0, yyleng);};
 \/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/  {pushLista(&comentarios, yytext, 1, yyleng);};
 
-[.]* {pushLista(&noReconocidos, yytext, 0, yyleng);};
+([ ])+ {;};
+. {pushLista(&noReconocidos, yytext, contadorDeLinea, yyleng);};
 %%
 
 int main() {
@@ -84,7 +85,7 @@ int main() {
     mostrarPalabrasReservadas(palabrasReservadas);
 
     printf("\nListado de constantes\n");
-    mostrarConstantes(constantes, sumatoriaDecimales);
+    mostrarConstantes(constantes);
 
     printf("\nSumatoria de enteros decimales = %d\n", sumatoriaDecimales);
 
@@ -93,6 +94,9 @@ int main() {
 
     printf("\nListado de comentarios\n");
     mostrarComentarios(comentarios);
+
+    printf("\nListado de directivas\n");
+    mostrarLista_OrdenAparicion(directivas, "Directiva", "Cantidad de apariciones");
 
     printf("\nListado de no reconocidos\n");
     mostrarLista_OrdenAparicion(noReconocidos, "Cadena/Caracter no reconocida", "Numero de linea");

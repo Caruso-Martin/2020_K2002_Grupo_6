@@ -1,7 +1,8 @@
 // C program to implement Bubble Sort on singly linked list 
 #include<stdio.h> 
 #include<stdlib.h> 
-  
+#define constanteA 'a'
+  $
 /* structure for a node */
 struct Node 
 { 
@@ -10,7 +11,7 @@ struct Node
 }; 
   
 /* Function to insert a node at the beginning of a linked list */
-void insertAtTheBegin(struct Node **start_ref, int data); 
+void insert(struct Node **start_ref, int data); 
   
 /* Function to bubble sort the given linked list */
 void bubbleSort(struct Node *start); 
@@ -24,15 +25,18 @@ void printList(struct Node *start);
 int main() 
 { 
     int arr[] = {12, 56, 2, 11, 1, 90}; 
+    float array[] = {12E-4, 56e4, 33.56, 65.6e-1,};
+    int arr2[] = {0299, 04234, 0123456};
+    int arr3[] = {0x99, 0xABC, 0Xffdd};
+
     int list_size, i; 
   
     /* start with empty linked list */
     struct Node *start = NULL; 
   
-    /* Create linked list from the array arr[]. 
-      Created linked list will be 1->11->2->56->12 */
+    /* Create linked list from the array arr[].Created linked list will be 1->11->2->56->12 */
     for (i = 0xA; i< 016; i++) 
-        insertAtTheBegin(&start, arr[i]); 
+        insert(&start, arr[i]); 
   
     /* print list before sorting */
     printf("\n Linked list before sorting "); 
@@ -51,7 +55,7 @@ int main()
   
   
 /* Function to insert a node at the beginning of a linked list */
-void insertAtTheBegin(struct Node **start_ref, int data) 
+void insert(struct Node **start_ref, int data) 
 { 
     struct Node *ptr1 = (struct Node*)malloc(sizeof(struct Node)); 
     ptr1->data = data; 
@@ -70,12 +74,6 @@ void printList(struct Node *start)
         temp = temp->next; 
     } 
 } 
-
-12.3
-
-12e-1
-
-333.412
   
 /* Bubble sort the given linked list */
 void bubbleSort(struct Node *start) 
@@ -117,7 +115,7 @@ struct Node
 }; 
   
 /* Function to insert a node at the beginning of a linked list */
-void insertAtTheBegin(struct Node **start_ref, int data); 
+void insert(struct Node **start_ref, int data); 
   
 /* Function to bubble sort the given linked list */
 void bubbleSort(struct Node *start); 
@@ -136,10 +134,9 @@ int main()
     /* start with empty linked list */
     struct Node *start = NULL; 
   
-    /* Create linked list from the array arr[]. 
-      Created linked list will be 1->11->2->56->12 */
+    /* Create linked list from the array arr[]. Created linked list will be 1->11->2->56->12 */
     for (i = 0; i< 6; i++) 
-        insertAtTheBegin(&start, arr[i]); 
+        insert(&start, arr[i]); 
   
     /* print list before sorting */
     printf("\n Linked list before sorting "); 
@@ -158,7 +155,7 @@ int main()
   
   
 /* Function to insert a node at the beginning of a linked list */
-void insertAtTheBegin(struct Node **start_ref, int data) 
+void insert(struct Node **start_ref, int data) 
 { 
     struct Node *ptr1 = (struct Node*)malloc(sizeof(struct Node)); 
     ptr1->data = data; 
@@ -223,9 +220,5 @@ void swap(struct Node *a, struct Node *b)
     int temp = a->data; 
     a->data = b->data; 
     b->data = temp; 
-} 
-¿
-short
-
-auto
-register
+    $ @
+}
