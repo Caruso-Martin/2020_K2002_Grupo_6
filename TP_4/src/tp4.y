@@ -4,8 +4,8 @@
     #include <stdio.h>
     #include <stdlib.h>
 
-    int yylex ();
-    int yyerror (char*);
+    int yylex();
+    int yyerror(char*);
 %}
 
 %union { /*Para poder manejar varios tipos de datos en el yyval, uno para enteros y otro para punto flotante)*/
@@ -17,24 +17,53 @@
 
 // %token <tipoUnion> LEXEMA 
 
-
-%token <doble> ENTERO
-%token <doble> REAL
-%token <doble> EXPRESION_CONSTANTE
-
-%token <cadena> CONSTANTE_CARACTER
-
-%token <cadena> LITERAL_CADENA
-
-%token <cadena> PALABRA_RESERVADA
-%token <cadena> TIPO_DE_DATO
-%token <cadena> ESTRUCTURA_DE_CONTROL
-%token <cadena> ESTRUCTURA_DE_ITERACCION
-
 %token <cadena> IDENTIFICADOR
-%token <caracter> CARACTER_DE_PUNTUACION
+%token <cadena> CONSTANTE 
+%token <cadena> CONSTANTE_CADENA
 
-%token <cadena> COMENTARIO
+%token <cadena> ESPECIFICADOR_DE_CLASE_DE_ALMACENAMIENTO
+// TYPEDEF STATIC AUTO REGISTER EXTERN
+%token <cadena> ESPECIFICADOR_DE_TIPO 
+// VOID CHAR SHORT INT LONG FLOAT DOUBLE SIGNED UNSIGNED
+%token <cadena> CALIFICADOR_DE_TIPO 
+// CONST VOLATILE
+%token <cadena> STRUCT_O_UNION 
+// STRUCT UNION
+
+%token <cadena> EXPRESION_CONSTANTE 
+
+%token <cadena> ENUM
+
+%token <cadena> IF
+%token <cadena> ELSE
+%token <cadena> SWITCH
+%token <cadena> WHILE
+%token <cadena> DO
+%token <cadena> FOR
+%token <cadena> CASE
+%token <cadena> DEFAULT
+ 
+%token <cadena> CONTINUE
+%token <cadena> BREAK
+%token <cadena> RETURN
+%token <cadena> GOTO
+ 
+%token <cadena> IFDEF
+%token <cadena> IFNDEF
+%token <cadena> ELIF
+%token <cadena> INCLUDE
+%token <cadena> DEFINE
+%token <cadena> UNDEF
+%token <cadena> LINE
+%token <cadena> ERROR
+%token <cadena> PRAGMA
+
+/* RENOVACIONES TP 4*/
+
+%token <charDe3Caracteres> OPERADOR_ASIGNACION
+/*'=' '*=' '/=' '%=' '+=' '-=' '<<=' '>>=' '&=' '^=' '|='*/
+%token <caracter> OPERADOR_UNARIO 
+/*'&' '*' '+' '-' '~' '!'*/
 
 // %type <tipoUnion> categoriaLexica
 
@@ -89,7 +118,6 @@
 %type <cadena> enumerador
 %type <cadena> constanteDeEnumeracion 
 %type <cadena> nombreDeTypedef
-%type <cadena> nombreDeTipo
 %type <cadena> declaradorAbstracto
 %type <cadena> declaradorAbstractoDirecto
 
@@ -126,13 +154,13 @@
 
 // %asocitividad 'operador' 
 
-%left '++' '--'         // Post-Incremento
+%left '++' '--'        // Post-Incremento
 %left '(' ')'           // Llamada a funcion
 %left '[' ']'           // Elemento de vector
 %left '.'               // Seleccionar elemento por referencia
-%left '->'              // Seleccionar elemento con puntero 
+%left "->"              // Seleccionar elemento con puntero 
 
-%right '++' '--'        // Pre-Incremento
+%right '++' '--'       // Pre-Incremento
 %right '+' '-'          // Suma/Resta unitaria
 %right '!' '~'          // NOT logico/binario
 %right '(typecast)'     // Conversion de tipo
@@ -173,18 +201,7 @@ expresionCondicional: expresionOLogico { ;}
     | expresionOLogico '?' expresion ':' expresionCondicional { ;}
 ;
 
-operadorAsignacion: '='
-    | '*='
-    | '/='
-    | '%='
-    | '+='
-    | '-='
-    | '<<='
-    | '>>='
-    | '&='
-    | '^='
-    | '|='
-;
+operadorAsignacion: OPERADOR_ASIGNACION;
 
 expresionOLogico: expresionYLogico { ;} 
     | expresionOLogico '||' expresionYLogico { ;} 
@@ -246,16 +263,7 @@ expresionUnaria: expresionSufijo { ;}
     | 'sizeof' '(' nombreDeTipo ')' { ;} 
 ;
 
-nombreDeTipo:
-;
-
-operadorUnario: '&'
-    | '*'
-    | '+'
-    | '-'
-    | '~'
-    | '!'
-;
+operadorUnario: OPERADOR_UNARIO;
 
 expresionSufijo:  expresionPrimaria '[' expresion ']' { ;} 
     | expresionSufijo '(' listaDeArgumentos ')' { ;} 
@@ -270,8 +278,8 @@ listaDeArgumentos: expresionDeAsignacion { ;}
 ;
 
 expresionPrimaria: IDENTIFICADOR { ;} 
-    | constante { ;} 
-    | constanteCadena { ;} 
+    | CONSTANTE { ;} 
+    | CONSTANTE_CADENA { ;} 
     | '(' expresion ')' { ;} 
 ;
 
@@ -306,39 +314,22 @@ listaDeInicializadores: inicializador { ;}
     | listaDeInicializadores ',' inicializador { ;} 
 ;
 
-especificadorDeClaseDeAlmacenamiento: 'typedef'
-    | 'static'
-    | 'auto'
-    | 'register'
-    | 'extern'
-;
+especificadorDeClaseDeAlmacenamiento: ESPECIFICADOR_DE_CLASE_DE_ALMACENAMIENTO;
 
-especificadorDeTipo: 'void'
-    | 'char'
-    | 'short'
-    | 'int'
-    | 'long'
-    | 'float'
-    | 'double'
-    | 'signed'
-    | 'unsigned'
+especificadorDeTipo: ESPECIFICADOR_DE_TIPO
     | especificadorDeStructOUnion { ;} 
     | especificadorDeEnum { ;} 
     | nombreDeTypedef { ;} 
 ;
 
-calificadorDeTipo: 'const'
-    | 'volatile'
-;
+calificadorDeTipo: CALIFICADOR_DE_TIPO;
 
 especificadorDeStructOUnion: structOUnion IDENTIFICADOR '{' listaDeDeclaracionesStruct '}' { ;} 
     | structOUnion '{' listaDeDeclaracionesStruct '}' { ;} 
     | structOUnion IDENTIFICADOR { ;} 
 ;
 
-structOUnion: 'struct'
-    | 'union'
-;
+structOUnion: STRUCT_O_UNION;
 
 listaDeDeclaracionesStruct: declaracionStruct { ;} 
     | listaDeDeclaracionesStruct declaracionStruct { ;} 
@@ -399,9 +390,9 @@ listaDeIdentificadores: IDENTIFICADOR { ;}
     | listaDeIdentificadores ',' IDENTIFICADOR { ;} 
 ;
 
-especificadorDeEnum: 'enum' IDENTIFICADOR '{' listaDeEnumeradores '}' { ;} 
-    | 'enum' '{' listaDeEnumeradores '}' { ;} 
-    | 'enum' IDENTIFICADOR { ;} 
+especificadorDeEnum: ENUM IDENTIFICADOR '{' listaDeEnumeradores '}' { ;} 
+    | ENUM '{' listaDeEnumeradores '}' { ;} 
+    | ENUM IDENTIFICADOR { ;} 
 ;
 
 listaDeEnumeradores: enumerador { ;} 
@@ -464,33 +455,33 @@ listaDeSentencias: sentencia { ;}
     | listaDeSentencias sentencia { ;} 
 ;
 
-sentenciaDeSeleccion: 'if' '(' expresion ')' sentencia { ;} 
-    | 'if' '(' expresion ')' sentencia 'else' sentencia { ;} 
-    | 'switch' '(' expresion ')' sentencia { ;} 
+sentenciaDeSeleccion: IF '(' expresion ')' sentencia { ;} 
+    | IF '(' expresion ')' sentencia ELSE sentencia { ;} 
+    | SWITCH '(' expresion ')' sentencia { ;} 
 ;
 
-sentenciaDeIteracion: 'while' '(' expresion ')' sentencia { ;} 
-    | 'do' sentencia 'while' '(' expresion ')' sentencia { ;} 
-    | 'for' '(' expresion ';' expresion ';' expresion ')' sentencia { ;} 
-    | 'for' '(' expresion ';' expresion ';'  ')' sentencia { ;} 
-    | 'for' '(' expresion ';'  ';' expresion ')' sentencia { ;} 
-    | 'for' '(' expresion ';'  ';'  ')' sentencia { ;} 
-    | 'for' '('  ';' expresion ';' expresion ')' sentencia { ;} 
-    | 'for' '('  ';' expresion ';'  ')' sentencia { ;} 
-    | 'for' '('  ';'  ';' expresion ')' sentencia { ;} 
-    | 'for' '(' ';'  ';' ')' sentencia { ;} 
+sentenciaDeIteracion: WHILE '(' expresion ')' sentencia { ;} 
+    | DO sentencia WHILE '(' expresion ')' sentencia { ;} 
+    | FOR '(' expresion ';' expresion ';' expresion ')' sentencia { ;} 
+    | FOR '(' expresion ';' expresion ';'  ')' sentencia { ;} 
+    | FOR '(' expresion ';'  ';' expresion ')' sentencia { ;} 
+    | FOR '(' expresion ';'  ';'  ')' sentencia { ;} 
+    | FOR '('  ';' expresion ';' expresion ')' sentencia { ;} 
+    | FOR '('  ';' expresion ';'  ')' sentencia { ;} 
+    | FOR '('  ';'  ';' expresion ')' sentencia { ;} 
+    | FOR '(' ';'  ';' ')' sentencia { ;} 
 ;
 
-sentenciaEtiquetada: 'case' EXPRESION_CONSTANTE ':' sentencia { ;} 
-    | 'default' ':' sentencia { ;} 
+sentenciaEtiquetada: CASE EXPRESION_CONSTANTE ':' sentencia { ;} 
+    | DEFAULT ':' sentencia { ;} 
     | IDENTIFICADOR ':' sentencia { ;} 
 ;
 
-sentenciaDeSalto: 'continue' ';' { ;} 
-    | 'break' ';' { ;} 
-    | 'return' expresion ';' { ;} 
-    | 'return' ';' { ;} 
-    | 'goto' IDENTIFICADOR ';' { ;} 
+sentenciaDeSalto: CONTINUE ';' { ;} 
+    | BREAK ';' { ;} 
+    | RETURN expresion ';' { ;} 
+    | RETURN ';' { ;} 
+    | GOTO IDENTIFICADOR ';' { ;} 
 ;
 
 /*Definiciones Externas*/
@@ -503,7 +494,7 @@ declaracionExterna: definicionDeFuncion { ;}
     | declaracion { ;} 
 ;
 
-definicionExterna: especificadoresDeDeclaracion decla listaDeDeclaraciones sentenciaCompuesta { ;} 
+definicionDeFuncion: especificadoresDeDeclaracion decla listaDeDeclaraciones sentenciaCompuesta { ;} 
     | especificadoresDeDeclaracion decla sentenciaCompuesta { ;} 
     | decla listaDeDeclaraciones sentenciaCompuesta { ;} 
     | decla sentenciaCompuesta { ;} 
@@ -532,39 +523,39 @@ seccionIF: grupoIF gruposElif grupoElse lineaEndif { ;}
     | grupoIF lineaEndif { ;} 
 ;
 
-grupoIF: '#' 'if' EXPRESION_CONSTANTE nuevaLinea grupo { ;} 
-    | '#' 'if' EXPRESION_CONSTANTE nuevaLinea { ;} 
-    | '#' 'ifdef' IDENTIFICADOR nuevaLinea grupo { ;} 
-    | '#' 'ifdef' IDENTIFICADOR nuevaLinea { ;} 
-    | '#' 'ifndef' IDENTIFICADOR nuevaLinea grupo { ;}  
-    | '#' 'ifndef' IDENTIFICADOR nuevaLinea { ;} 
+grupoIF: '#' IF EXPRESION_CONSTANTE nuevaLinea grupo { ;} 
+    | '#' IF EXPRESION_CONSTANTE nuevaLinea { ;} 
+    | '#' IFDEF IDENTIFICADOR nuevaLinea grupo { ;} 
+    | '#' IFDEF IDENTIFICADOR nuevaLinea { ;} 
+    | '#' IFNDEF IDENTIFICADOR nuevaLinea grupo { ;}  
+    | '#' IFNDEF IDENTIFICADOR nuevaLinea { ;} 
 ;
 
 gruposElif: grupoElif { ;} 
     | gruposElif grupoElif { ;} 
 ;
 
-grupoElif: '#' 'elif' EXPRESION_CONSTANTE nuevaLinea grupo { ;} 
-    | '#' 'elif' EXPRESION_CONSTANTE nuevaLinea { ;} 
+grupoElif: '#' ELIF EXPRESION_CONSTANTE nuevaLinea grupo { ;} 
+    | '#' ELIF EXPRESION_CONSTANTE nuevaLinea { ;} 
 ;
 
-grupoElse: '#' 'else' nuevaLinea grupo { ;} 
-    | '#' 'else' nuevaLinea { ;} 
+grupoElse: '#' ELSE nuevaLinea grupo { ;} 
+    | '#' ELSE nuevaLinea { ;} 
 ;
 
-lineaEndif: '#' 'endif' nuevaLinea { ;} ;
+lineaEndif: '#' ENDIF nuevaLinea { ;} ;
 
-lineaDeControl: '#' 'include' tokensPP nuevaLinea { ;} 
-    | '#' 'define' IDENTIFICADOR listaDeReemplazos nuevaLinea { ;} 
-    | '#' 'define' IDENTIFICADOR parizq listaDeIdentificadores listaDeReemplazos nuevaLinea { ;} 
-    | '#' 'define' IDENTIFICADOR parizq listaDeReemplazos nuevaLinea { ;} 
-    | '#' 'define' IDENTIFICADOR parizq listaDeReemplazos nuevaLinea { ;} 
-    | '#' 'define' IDENTIFICADOR parizq listaDeIdentificadores ',' listaDeReemplazos nuevaLinea { ;} 
-    | '#' 'undef' IDENTIFICADOR nuevaLinea { ;} 
-    | '#' 'line' tokensPP nuevaLinea { ;} 
-    | '#' 'error' tokensPP nuevaLinea { ;} 
-    | '#' 'error' nuevaLinea { ;} 
-    | '#' 'pragma' tokensPP nuevaLinea { ;} 
+lineaDeControl: '#' INCLUDE tokensPP nuevaLinea { ;} 
+    | '#' DEFINE IDENTIFICADOR listaDeReemplazos nuevaLinea { ;} 
+    | '#' DEFINE IDENTIFICADOR parizq listaDeIdentificadores listaDeReemplazos nuevaLinea { ;} 
+    | '#' DEFINE IDENTIFICADOR parizq listaDeReemplazos nuevaLinea { ;} 
+    | '#' DEFINE IDENTIFICADOR parizq listaDeReemplazos nuevaLinea { ;} 
+    | '#' DEFINE IDENTIFICADOR parizq listaDeIdentificadores ',' listaDeReemplazos nuevaLinea { ;} 
+    | '#' UNDEF IDENTIFICADOR nuevaLinea { ;} 
+    | '#' LINE tokensPP nuevaLinea { ;} 
+    | '#' ERROR tokensPP nuevaLinea { ;} 
+    | '#' ERROR nuevaLinea { ;} 
+    | '#' PRAGMA tokensPP nuevaLinea { ;} 
     | '#' nuevaLinea { ;} 
 ;
 
@@ -575,7 +566,7 @@ lineaDeTexto: tokensPP nuevaLinea { ;}
 noDirectiva: tokensPP nuevaLinea { ;} ;
 
 parizq:
-    (NO SE QUE ES ESO)
+    CARACTER(NO SEGUIDO DE UN ESPACIO EN BLANCO)
 ;
 
 listaDeReemplazos: /* vacio */ { ;} 
@@ -596,6 +587,10 @@ int yyerror(char *mensaje) {  // Funcion de error
   printf ("Error: %s\n", mensaje);
 }
 
-void main() {
-    yyparse();
+int main()
+{
+    #ifdef BISON_DEBUG
+        yydebug = 1;
+    #endif
+        yyparse();
 }

@@ -23,7 +23,8 @@ void mostrarPalabrasReservadas(struct Listado* lista){
         return;
     
     mostrarPalabrasReservadas(lista->siguiente); 
-
+    int b = 9;
+    double a = (unsigned int) b;
     switch (lista->numero) {
         case 1:
             printf("Palabra reservada - Tipo de dato: %20s\n", lista->cadena);

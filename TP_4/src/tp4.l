@@ -70,34 +70,7 @@ int main() {
 
     yylex();
 	
-    // Acciónes posteriores a la ejecución del analizador léxico, sirven por ejemplo, para hacer un informen de resumen.
 
-    printf("Listado de identificadores\n");
-    ordenarAlfabeticamente(identificadores);
-    mostrarLista_OrdenAparicion(identificadores, "Identificador", "Cantidad de apariciones");
-
-    printf("\nListado de literales cadena\n");
-    mostrarLista_OrdenAparicion(literalesCadena, "Literal cadena", "Longitud");
-   
-    printf("\nListado de palabras reservadas\n");
-    mostrarPalabrasReservadas(palabrasReservadas);
-
-    printf("\nListado de constantes\n");
-    mostrarConstantes(constantes);
-
-    printf("\nSumatoria de enteros decimales = %d\n", sumatoriaDecimales);
-
-    printf("\nListado de caracteres de puntuacion\n");
-    mostrarLista_OrdenAparicion(caracteresPuntuacion, "Caracter", "Cantidad de apariciones");
-
-    printf("\nListado de comentarios\n");
-    mostrarComentarios(comentarios);
-
-    printf("\nListado de directivas\n");
-    mostrarLista_OrdenAparicion(directivas, "Directiva", "Cantidad de apariciones");
-
-    printf("\nListado de no reconocidos\n");
-    mostrarLista_OrdenAparicion(noReconocidos, "Cadena/Caracter no reconocida", "Numero de linea");
     
     return 0;
 }
