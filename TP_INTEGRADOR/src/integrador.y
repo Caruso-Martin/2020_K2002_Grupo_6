@@ -8,11 +8,12 @@
     #include <string.h>
 
     // Funciones obligatorias
-    int yylex ();
-    void yyerror (char*);
+    int yylex();
     int yywrap() { return(1); }
+    void yyerror(char*);
+    
 
-    FILE* yyin;
+    FILE * yyin;
 
     int numeroLinea = 0;
 %}
@@ -191,7 +192,7 @@ declaracion: especificadoresDeclaracion listaDeclaradores
 especificadoresDeclaracion: ESPECIFICADOR_CLASE_ALMACENAMIENTO especificadoresDeclaracion 
     | ESPECIFICADOR_CLASE_ALMACENAMIENTO
     | especificadorTipo especificadoresDeclaracion
-    | especificadorTipo  
+    | especificadorTipo  { printf("\nSe declara la variable"); }
     | CALIFICADOR_TIPO especificadoresDeclaracion
     | CALIFICADOR_TIPO 
 ;
@@ -201,7 +202,7 @@ listaDeclaradores: declarador
 ;    
 
 declarador: decla 
-    | decla '=' inicializador
+    | decla '=' inicializador { printf("\nSe inicializa la variable"); }
 ;
 
 inicializador: expresionAsignacion 
@@ -310,12 +311,12 @@ declaradorAbstracto: puntero
 ;
 
 declaradorAbstractoDirecto: '(' declaradorAbstracto ')' 
-    | declaradorAbstractoDirecto '[' expresionConstante ']'
-    | declaradorAbstractoDirecto '[' ']' 
+    | declaradorAbstractoDirecto '[' expresionConstante ']'     { printf("\nSe declara el arreglo"); }
+    | declaradorAbstractoDirecto '[' ']'                        { printf("\nSe declara el arreglo vacio"); }
     | '[' expresionConstante ']' 
     | '[' ']' 
-    | declaradorAbstractoDirecto '(' listaTiposParametros ')'
-    | declaradorAbstractoDirecto '(' ')'
+    | declaradorAbstractoDirecto '(' listaTiposParametros ')'   { printf("\nSe declara la funcion"); }
+    | declaradorAbstractoDirecto '(' ')'                        { printf("\nSe declara la funcion sin parametros"); }
     | '(' listaTiposParametros ')'
     | '(' ')'
 ;
@@ -374,8 +375,8 @@ sentenciaSalto: CONTINUE ';'    { printf("\nSentencia de salto (CONTINUE)");    
     | GOTO IDENTIFICADOR ';'    { printf("\nSentencia de salto (GOTO)");            }
 ;
 
-
 %%
+
 
 // Funcion de error 
 void yyerror(char * mensaje) {  
