@@ -10,6 +10,8 @@
 
     FILE* yyin;
 
+    int numeroLinea = 1;
+
 %}
 
 %union {
@@ -32,7 +34,7 @@
 %token <cadena> OPERADOR_RELACIONAL                 // < > <= >=
 %token <cadena> OPERADOR_CORRIMIENTO                // << >>
 %token <cadena> OPERADOR_ADITIVO                    // + - 
-%token <cadena> OPERADOR_MULTIPLICATIVO             // * /
+%token <cadena> OPERADOR_MULTIPLICATIVO             // * / %
 %token <cadena> OPERADOR_INCREMENTO                 // ++ --
 %token <cadena> OPERADOR_UNARIO                     // & * + - ~ !
 %token <cadena> OPERADOR_SIZEOF                     // sizeof
@@ -46,12 +48,12 @@
 %token <real>   CONSTANTE_REAL                      //  
 %token <entero> CONSTANTE_CARACTER                  // 
 
-// TIPOS DE DATO
+// DECLARADORES
 %token <cadena> TIPO_DATO                           // void char short int long float double signed unsigned
 %token <cadena> ESPECIFICADOR_CLASE_ALMACENAMIENTO  // typedef static auto register extern
 %token <cadena> CALIFICADOR_TIPO                    // const volatile
 %token <cadena> STRUCT_O_UNION                      // struct union
-%token <cadena> ELLIPSIS                            // . . .
+%token <cadena> ELLIPSIS                            // ...
 
 // PALABRAS RESERVADAS
 %token <cadena> ENUM 
@@ -74,13 +76,12 @@ input: /**/
     | input line
 ;
 
-line: declaracion '\n'  
-    | sentencia '\n'    
-    | error '\n'          
+line: declaracion '\n'  { numeroLinea++; }
+    | sentencia '\n'    { numeroLinea++; }
+    | error '\n'        { printf("\n***Error sintactico - Linea %i***\n", numeroLinea); numeroLinea++; }        
 ;
 
 /* **** Expresiones **** */
-
 expresion: expresionAsignacion 
     | expresion ',' expresionAsignacion
 ;
@@ -270,15 +271,12 @@ declaradorDirecto: IDENTIFICADOR
     | '(' decla ')' 
     | declaradorDirecto '[' expresionConstante_ ']' 
     | declaradorDirecto '(' listaTiposParametros ')' /* Declarador nuevo estilo */
-    | declaradorDirecto '(' listaIdentificadores_ ')' /* Declarador estilo obsoleto */
 ;
+
+/*  declaradorDirecto '(' listaIdentificadores_ ')'  Declarador estilo obsoleto */
 
 expresionConstante_: /**/
     | expresionConstante
-;
-
-listaIdentificadores_: /**/
-    | listaIdentificadores
 ;
 
 listaTiposParametros: listaParametros 
@@ -290,7 +288,7 @@ listaParametros: declaracionParametro
 ;
 
 declaracionParametro: especificadoresDeclaracion decla  /* Parametros "nombrados" */
-    | especificadoresDeclaracion declaradorAbstracto_ /* Parametros "anonimos" */
+    | especificadoresDeclaracion declaradorAbstracto_   /* Parametros "anonimos"  */
 ;
 
 declaradorAbstracto_: /**/
