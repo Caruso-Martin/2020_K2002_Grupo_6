@@ -42,4 +42,3 @@ La **entrega, además de la defensa, será a través del repositorio** de GitHub
 Las **consultas** podrán ser respondidas a través de los foros. Es importante que los utilicen para compartir sus dudas con el resto de los compañeros. También estaremos destinado parte de la clase para responder consultas en caso de ser necesario.
 
 Muchos éxitos =)
-
