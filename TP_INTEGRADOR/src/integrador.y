@@ -70,9 +70,12 @@
 %token <cadena> RETURN
 %token <cadena> GOTO
 
+/* %type <tipo>  */
+%type <cadena> error
+
 %%
 
-input: /**/
+input: /* */
     | input line
 ;
 
@@ -81,7 +84,7 @@ line: declaracion '\n'  { numeroLinea++; }
     | error '\n'        { printf("\n***Error sintactico - Linea %i***\n", numeroLinea); numeroLinea++; }        
 ;
 
-/* **** Expresiones **** */
+/* **************************************** EXPRESIONES **************************************** */
 expresion: expresionAsignacion 
     | expresion ',' expresionAsignacion
 ;
@@ -147,13 +150,12 @@ expresionUnaria: expresionSufijo
 
 expresionSufijo: expresionPrimaria 
     | expresionSufijo '[' expresion ']' /* arreglo */
-    | expresionSufijo '(' listaArgumentos ')' /* invocacion */
+    | expresionSufijo '(' listaArgumentos_ ')' /* invocacion */
     | expresionSufijo OPERADOR_SELECCION_MIEMBRO IDENTIFICADOR 
     | expresionSufijo OPERADOR_INCREMENTO
 ;
 
-listaArgumentos: /**/
-    | expresionAsignacion 
+listaArgumentos: expresionAsignacion 
     | listaArgumentos ',' expresionAsignacion
 ;
 
@@ -174,32 +176,25 @@ constante: CONSTANTE_DECIMAL
 ;
 
 
-/* **** Declaraciones **** */
+/* **************************************** DECLARACIONES **************************************** */
 
 declaracion: especificadoresDeclaracion listaDeclaradores_
 ;
 
-listaDeclaradores_: /**/
-    | listaDeclaradores;
-
-especificadoresDeclaracion: ESPECIFICADOR_CLASE_ALMACENAMIENTO especificadoresDeclaracion_
-    | especificadorTipo especificadoresDeclaracion_
-    | CALIFICADOR_TIPO especificadoresDeclaracion_
-;
-
-especificadoresDeclaracion_: /**/
-    | especificadoresDeclaracion
+especificadoresDeclaracion: ESPECIFICADOR_CLASE_ALMACENAMIENTO especificadoresDeclaracion_  { printf(" - Clase de almacenamiento : %s", $<cadena>1);    }
+    | especificadorTipo especificadoresDeclaracion_                                         { printf(" - Tipo : %s", $<cadena>1);                       }
+    | CALIFICADOR_TIPO especificadoresDeclaracion_                                          { printf(" - Calificador : %s", $<cadena>1);                }
 ;
 
 listaDeclaradores: declarador 
     | listaDeclaradores ',' declarador
 ;
 
-declarador: decla 
-    | decla '=' inicializador
+declarador: decla               { printf("\nSe declaro una variable");    }
+    | decla '=' inicializador   { printf("\nSe inicializo una variable"); }
 ;
 
-inicializador: expresionAsignacion  /* Inicializacion de tipos escalares */
+inicializador: expresionAsignacion  /* Inicializacion de tipos escalares     */
     | '{' listaInicializadores '}'  /* Inicializacion de tipos estructurados */
     | '{' listaInicializadores ',' '}'
 ;
@@ -209,17 +204,15 @@ listaInicializadores: inicializador
 ;
 
 especificadorTipo: TIPO_DATO
-    | especificadorStructOUnion
+    /*| especificadorStructOUnion*/
     | especificadorEnum
     | nombreTypedef
 ;
 
+// STRUCT-UNION 
+/*A1
 especificadorStructOUnion: STRUCT_O_UNION IDENTIFICADOR_ '{' listaDeclaracionesStruct '}' 
     | STRUCT_O_UNION IDENTIFICADOR
-;
-
-IDENTIFICADOR_: /**/
-    | IDENTIFICADOR
 ;
 
 listaDeclaracionesStruct: declaracionStruct 
@@ -228,15 +221,12 @@ listaDeclaracionesStruct: declaracionStruct
 
 declaracionStruct: listaCalificadores declaradoresStruct ';'
 ;
-
+A1*/
+/*
 listaCalificadores: especificadorTipo listaCalificadores
     | CALIFICADOR_TIPO listaCalificadores
-;
-
-listaCalificadores_: /**/
-    | listaCalificadores
-;
-
+;*/
+/*B2
 declaradoresStruct: declaStruct 
     | declaradoresStruct ',' declaStruct
 ;
@@ -244,40 +234,25 @@ declaradoresStruct: declaStruct
 declaStruct: decla 
     | decla_ ':' expresionConstante
 ;
-
-decla_: /**/
-    | decla
-;
-
+B2*/
 decla: puntero_ declaradorDirecto
 ;
 
-puntero_: /**/
-    | puntero
+puntero: '*' /*listaCalificadoresTipos_ */
+    | '*' /*listaCalificadoresTipos_*/ puntero
 ;
 
-puntero: '*' listaCalificadoresTipos_ 
-    | '*' listaCalificadoresTipos_ puntero
-;
-
-listaCalificadoresTipos_: /**/
-    | listaCalificadoresTipos
-;
-listaCalificadoresTipos: CALIFICADOR_TIPO 
+/*listaCalificadoresTipos: CALIFICADOR_TIPO 
     | listaCalificadoresTipos CALIFICADOR_TIPO
-;
+;*/
 
 declaradorDirecto: IDENTIFICADOR 
     | '(' decla ')' 
     | declaradorDirecto '[' expresionConstante_ ']' 
-    | declaradorDirecto '(' listaTiposParametros ')' /* Declarador nuevo estilo */
+    | declaradorDirecto '(' listaTiposParametros ')'    { printf("\nSe declaro una funcion"); }
 ;
 
 /*  declaradorDirecto '(' listaIdentificadores_ ')'  Declarador estilo obsoleto */
-
-expresionConstante_: /**/
-    | expresionConstante
-;
 
 listaTiposParametros: listaParametros 
     | listaParametros ',' ELLIPSIS
@@ -287,19 +262,11 @@ listaParametros: declaracionParametro
     | listaParametros ',' declaracionParametro
 ;
 
-declaracionParametro: especificadoresDeclaracion decla  /* Parametros "nombrados" */
-    | especificadoresDeclaracion declaradorAbstracto_   /* Parametros "anonimos"  */
+declaracionParametro: especificadoresDeclaracion decla  /* Parametros nombrados */
+    | especificadoresDeclaracion declaradorAbstracto_   /* Parametros anonimos  */
 ;
 
-declaradorAbstracto_: /**/
-    | declaradorAbstracto
-;
-
-listaIdentificadores: IDENTIFICADOR 
-    | listaIdentificadores ',' IDENTIFICADOR
-;
-
-especificadorEnum: ENUM IDENTIFICADOR_ { listaEnumeradores } 
+especificadorEnum: ENUM IDENTIFICADOR_ '{' listaEnumeradores '}' 
     | ENUM IDENTIFICADOR
 ;
 
@@ -317,7 +284,7 @@ constanteEnumeracion: IDENTIFICADOR
 nombreTypedef: IDENTIFICADOR
 ;
 
-nombreTipo: listaCalificadores declaradorAbstracto_
+nombreTipo: /*listaCalificadores*/ declaradorAbstracto_
 ;
 
 declaradorAbstracto: puntero 
@@ -329,49 +296,36 @@ declaradorAbstractoDirecto: '(' declaradorAbstracto ')'
     | declaradorAbstractoDirecto_ '(' listaTiposParametros_ ')'
 ;
 
-listaTiposParametros_: /**/ 
-    | listaTiposParametros
-;
-declaradorAbstractoDirecto_: /**/
-    | declaradorAbstractoDirecto
-;
 
-/* **** Sentencias **** */ 
+/* **************************************** SENTENCIAS **************************************** */ 
 sentencia: sentenciaExpresion
     | sentenciaCompuesta 
     | sentenciaSeleccion 
     | sentenciaIteracion 
-    | sentenciaEtiquetada 
-    | sentenciaSalto
+    | sentenciaSalto        
 ;
 
 sentenciaExpresion: expresion_ ';'
 ;
 
-expresion_: /**/ 
-    | expresion_
+expresion_: /* */    { printf("\nSentencia expresion - VACIA.");   }
+    | expresion     
 ;
-sentenciaCompuesta: '{' listaDeclaraciones listaSentencias '}'
+sentenciaCompuesta: '{' listaDeclaraciones_ listaSentencias_ '}'    { printf("\nSentencia expresion - COMPUESTA.");   }
 ;
 
-listaDeclaraciones: /**/
-    | declaracion 
+listaDeclaraciones: declaracion 
     | listaDeclaraciones declaracion
 ;
 
-listaSentencias: /**/
-    | sentencia 
+listaSentencias: sentencia 
     | listaSentencias sentencia
 ;
 
-sentenciaSeleccion: IF '(' expresion ')' sentencia 
-    | IF '(' expresion ')' sentencia ELSE sentencia 
-    | SWITCH '(' expresion ')' sentencia /* La expresion e controla un switch debe ser de tipo entero. */
-;
-
-sentenciaIteracion: WHILE '(' expresion ')' sentencia 
-    | DO sentencia WHILE '(' expresion ')' ';' 
-    | FOR '(' expresion_';' expresion_ ';' expresion_ ')' sentencia
+sentenciaSeleccion: IF '(' expresion ')' sentencia  { printf("\nSentencia de SELECCION - IF.");         }    
+    | IF '(' expresion ')' sentencia ELSE sentencia { printf("\nSentencia de SELECCION - IF/ELSE.");    } 
+    | SWITCH '(' expresion ')' sentencia            { printf("\nSentencia de SELECCION - SWITCH.");     }
+    | SWITCH '(' expresion ')' sentenciaEtiquetada  { printf("\nSentencia de SELECCION - SWITCH.");     }
 ;
 
 sentenciaEtiquetada: CASE expresionConstante ':' sentencia 
@@ -379,15 +333,81 @@ sentenciaEtiquetada: CASE expresionConstante ':' sentencia
     | IDENTIFICADOR ':' sentencia /*Las sentencias case y default se utilizan solo dentro de una sentencia switch.*/
 ;
 
-sentenciaSalto: CONTINUE ';'
-    | BREAK ';' 
-    | RETURN expresion_ ';' 
-    | GOTO IDENTIFICADOR ';'
+sentenciaIteracion: WHILE '(' expresion ')' sentencia               { printf("\nSentencia de ITERACION - WHILE.");      } 
+    | DO sentencia WHILE '(' expresion ')' ';'                      { printf("\nSentencia de ITERACION - DO/WHILE.");   } 
+    | FOR '(' expresion_';' expresion_ ';' expresion_ ')' sentencia { printf("\nSentencia de ITERACION - FOR.");        }
+;
+
+sentenciaSalto: CONTINUE ';'    { printf("\nSentencia de SALTO - CONTINUE.");   }
+    | BREAK ';'                 { printf("\nSentencia de SALTO - BREAK.");      } 
+    | RETURN expresion_ ';'     { printf("\nSentencia de SALTO - RETURN.");     } 
+    | GOTO IDENTIFICADOR ';'    { printf("\nSentencia de SALTO - GOTO.");       }
+;
+
+
+/* **************************************** OPCIONALES **************************************** */
+// Opcionales en "Expresiones"
+listaArgumentos_: /* */
+    | listaArgumentos
+;
+
+// Opcionales en "Declaraciones"
+
+listaDeclaradores_: /* */
+    | listaDeclaradores
+;
+
+especificadoresDeclaracion_: /* */
+    | especificadoresDeclaracion
+;
+
+IDENTIFICADOR_: /* */
+    | IDENTIFICADOR
+;
+
+//listaCalificadores_: /* */
+//    | listaCalificadores
+//;
+
+decla_: /* */
+    | decla
+;
+
+puntero_: /* */
+    | puntero
+;
+
+//listaCalificadoresTipos_: /* */
+//    | listaCalificadoresTipos
+//;
+
+expresionConstante_: /* */
+    | expresionConstante
+;
+
+declaradorAbstracto_: /* */
+    | declaradorAbstracto
+;
+
+listaTiposParametros_: /* */ 
+    | listaTiposParametros
+;
+declaradorAbstractoDirecto_: /* */
+    | declaradorAbstractoDirecto
+;
+
+// Opcionales en "Sentencias"
+listaDeclaraciones_: /* */
+    | listaDeclaraciones 
+;
+
+listaSentencias_: /* */ 
+    | listaSentencias 
 ;
 
 %%
 
 int main() {
-    //yyin = fopen("", "r");
+    yyin = fopen("test.c", "r");
     yyparse();
 }

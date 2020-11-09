@@ -7,7 +7,6 @@
 
 option noyywrap
 
-
 OPERADOR_ASIGNACION ("="|"*="|"/="|"%="|"+="|"*="|"<<="|">>="|"&="|"^="|"|=") 
 OPERADOR_O_LOGICO "||"
 OPERADOR_Y_LOGICO "&&"
@@ -79,7 +78,7 @@ SECUENCIA_ESCAPE_SIMPLE (a|b|f|n|r|t|v|\'|\"|\?|\\)
 {OPERADOR_IGUALDAD}             { return OPERADOR_IGUALDAD;             }         
 {OPERADOR_RELACIONAL}           { return OPERADOR_RELACIONAL;           }       
 {OPERADOR_CORRIMIENTO}          { return OPERADOR_CORRIMIENTO;          }      
-{OPERADOR_ADITIVO}              { return OPERADOR_ADITIVO               }          
+{OPERADOR_ADITIVO}              { return OPERADOR_ADITIVO;              }          
 {OPERADOR_MULTIPLICATIVO}       { return OPERADOR_MULTIPLICATIVO;       }   
 {OPERADOR_INCREMENTO}           { return OPERADOR_INCREMENTO;           }       
 {OPERADOR_UNARIO}               { return OPERADOR_UNARIO;               }           
