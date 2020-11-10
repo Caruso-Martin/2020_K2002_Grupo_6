@@ -1,5 +1,7 @@
 # UTN - FRBA
+
 ## Sintaxis y Semántica de los Lenguajes - 2020
+
 ### Trabajo Práctico Integrador: Analizador léxico, sintáctico y semántico de C
 
 **Implementar en C** un programa que realice el análisis léxico, sintáctico y semántico de un archivo fuente del lenguaje C generando su respectivo reporte sobre el análisis realizado. El mismo será un modelo simplificado que solamente realizará determinadas validaciones semánticas.
@@ -42,3 +44,7 @@ La **entrega, además de la defensa, será a través del repositorio** de GitHub
 Las **consultas** podrán ser respondidas a través de los foros. Es importante que los utilicen para compartir sus dudas con el resto de los compañeros. También estaremos destinado parte de la clase para responder consultas en caso de ser necesario.
 
 Muchos éxitos =)
+
+## Utiles
+mingw32-make
+./integrador
