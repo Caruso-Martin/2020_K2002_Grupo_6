@@ -5,7 +5,8 @@
     #include <string.h>
 %}
 
-option noyywrap
+%option noyywrap
+%option yylineno
 
 OPERADOR_ASIGNACION ("*="|"/="|"%="|"+="|"*="|"<<="|">>="|"&="|"^="|"|=") 
 OPERADOR_O_LOGICO "||"

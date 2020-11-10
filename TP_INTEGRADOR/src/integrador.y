@@ -10,7 +10,7 @@
 
     FILE* yyin;
 
-    int numeroLinea = 1;
+    extern int yylineno;
 
 %}
 
@@ -72,10 +72,10 @@ input: /* */
     | input line
 ;
 
-line: declaracion '\n'              { numeroLinea++; }
-    | sentencia '\n'                { numeroLinea++; }
-    | error '\n'                    { strcpy($<cadena>$, $<cadena>1); printf("\n***Error sintactico - Linea %i: %s***\n", numeroLinea, $<cadena>1); numeroLinea++; }
-    | error ';'                     { strcpy($<cadena>$, $<cadena>1); printf("\n***Error sintactico - Linea %i: %s***\n", numeroLinea, $<cadena>1); numeroLinea++; }  
+line: declaracion '\n'              { yylineno++; }
+    | sentencia '\n'                { yylineno++; }
+    | error '\n'                    { strcpy($<cadena>$, $<cadena>1); printf("\n***Error sintactico - Linea %i: %s***\n", yylineno, $<cadena>1); yylineno++; }
+    | error ';'                     { strcpy($<cadena>$, $<cadena>1); printf("\n***Error sintactico - Linea %i: %s***\n", yylineno, $<cadena>1); yylineno++; }  
 
 ;
 
@@ -187,13 +187,13 @@ declaracion: declaracionVariable
     |   declaracionFuncion
 ;
 
-/****/
+/** Variables **/
 
-declaracionVariable: TIPO_DATO listaDeclaradores ';' {printf("de tipo %s.", $<cadena>1);} 
+declaracionVariable: TIPO_DATO listaDeclaradores ';' {printf("de tipo %s.\n", $<cadena>1);} 
 ;
 
 listaDeclaradores: declarador           { printf("\nSe declaro una variable ");    }
-    | listaDeclaradores ',' declarador  { printf("y otra variable ");               }
+    | listaDeclaradores ',' declarador  { printf("y otra variable ");            }
 ;
 
 declarador: decla                   
@@ -209,10 +209,10 @@ listaInicializadores: inicializador
     | listaInicializadores ',' inicializador  
 ;
 
-/****/
+/** Funciones **/
 
-declaracionFuncion: TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' ';'     { printf("\nSe declaro una funcion\n"); }
-    | TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' sentenciaCompuesta    { printf("\nSe definio una funcion\n"); }
+declaracionFuncion: TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' ';'     { printf("\nSe declaro una funcion"); }
+    | TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' sentenciaCompuesta    { printf("\nSe definio una funcion"); }
 ;
 
 listaParametros: parametro
@@ -222,7 +222,7 @@ listaParametros: parametro
 parametro: TIPO_DATO decla
 ;
 
-/****/
+/** Extras **/
 
 decla: /* */
     | declaradorDirecto
@@ -235,7 +235,7 @@ puntero: '*'
 ;
 
 declaradorDirecto: IDENTIFICADOR 
-    | declaradorDirecto '[' expresionConstante_ ']'    { printf("\nSe declaro un arreglo\n");  }
+    | declaradorDirecto '[' expresionConstante_ ']'    { printf("\nSe declaro un arreglo");  }
 ;
 
 /* **************************************** SENTENCIAS **************************************** */ 
@@ -247,13 +247,14 @@ sentencia: sentenciaExpresion
     | sentenciaEtiquetada     
 ;
 
-sentenciaExpresion: expresion_ ';'
+sentenciaExpresion: expresion_s ';'
 ;
 
-expresion_: /* */    { printf("\nSentencia expresion - VACIA.\n");   }
-    | expresion      { printf("\nSentencia expresion\n");   }   
+expresion_s: /* */    { printf("Sentencia expresion - VACIA.\n");   }
+    | expresion      { printf("Sentencia expresion         \n");   }   
 ;
-sentenciaCompuesta: '{' listaDeclaraciones_ listaSentencias_ '}'    { printf("\nSentencia expresion - COMPUESTA.\n");   }
+
+sentenciaCompuesta: '{' listaDeclaraciones_ listaSentencias_ '}'    { printf("Sentencia expresion - COMPUESTA.\n");   }
 ;
 
 listaDeclaraciones: declaracion 
@@ -264,24 +265,25 @@ listaSentencias: sentencia
     | listaSentencias sentencia
 ;
 
-sentenciaSeleccion: IF '(' expresion ')' sentencia  { printf("\nSentencia de SELECCION - IF.\n");         }    
-    | IF '(' expresion ')' sentencia ELSE sentencia { printf("\nSentencia de SELECCION - IF/ELSE.\n");    } 
-    | SWITCH '(' expresion ')' sentencia            { printf("\nSentencia de SELECCION - SWITCH.\n");     };
+sentenciaSeleccion: IF '(' expresion ')' sentencia  { printf("Sentencia de SELECCION - IF.     \n");    }    
+    | IF '(' expresion ')' sentencia ELSE sentencia { printf("Sentencia de SELECCION - IF/ELSE.\n");    } 
+    | SWITCH '(' expresion ')' sentencia            { printf("Sentencia de SELECCION - SWITCH. \n");    }
+;
 
 sentenciaEtiquetada: CASE expresionConstante ':' sentencia 
     | DEFAULT ':' sentencia 
     | IDENTIFICADOR ':' sentencia /*Las sentencias case y default se utilizan solo dentro de una sentencia switch.*/
 ;
 
-sentenciaIteracion: WHILE '(' expresion ')' sentencia               { printf("\nSentencia de ITERACION - WHILE.\n");      } 
-    | DO sentencia WHILE '(' expresion ')' ';'                      { printf("\nSentencia de ITERACION - DO/WHILE.\n");   } 
-    | FOR '(' expresion_';' expresion_ ';' expresion_ ')' sentencia { printf("\nSentencia de ITERACION - FOR.\n");        }
+sentenciaIteracion: WHILE '(' expresion ')' sentencia               { printf("Sentencia de ITERACION - WHILE.   \n");   } 
+    | DO sentencia WHILE '(' expresion ')' ';'                      { printf("Sentencia de ITERACION - DO/WHILE.\n");   } 
+    | FOR '(' expresion_';' expresion_ ';' expresion_ ')' sentencia { printf("Sentencia de ITERACION - FOR.     \n");   }
 ;
 
-sentenciaSalto: CONTINUE ';'    { printf("\nSentencia de SALTO - CONTINUE.\n");   }
-    | BREAK ';'                 { printf("\nSentencia de SALTO - BREAK.\n");      } 
-    | RETURN expresion_ ';'     { printf("\nSentencia de SALTO - RETURN.\n");     } 
-    | GOTO IDENTIFICADOR ';'    { printf("\nSentencia de SALTO - GOTO.\n");       }
+sentenciaSalto: CONTINUE ';'    { printf("Sentencia de SALTO - CONTINUE.\n");   }
+    | BREAK ';'                 { printf("Sentencia de SALTO - BREAK.   \n");   } 
+    | RETURN expresion_ ';'     { printf("Sentencia de SALTO - RETURN.  \n");   } 
+    | GOTO IDENTIFICADOR ';'    { printf("Sentencia de SALTO - GOTO.    \n");   }
 ;
 
 
@@ -302,6 +304,10 @@ listaParametros_: /* */
 ;
 
 // Opcionales en "Sentencias"
+expresion_: /* */    
+    | expresion       
+;
+
 listaDeclaraciones_: /* */
     | listaDeclaraciones 
 ;
@@ -318,6 +324,6 @@ int main() {
         yydebug = 1;
     #endif 
     
-    yyin = fopen("test.c", "r");
+    yyin = fopen("./test.c", "r");
     yyparse();
 }
