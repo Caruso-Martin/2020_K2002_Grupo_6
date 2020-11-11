@@ -864,7 +864,7 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 57 "../src/integrador.l"
-{ strcpy(yylval.cadena, yytext); return TIPO_DATO;                          }
+{ yylval.cadena = strdup(yytext); return TIPO_DATO; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -929,12 +929,12 @@ YY_RULE_SETUP
 case 29:
 YY_RULE_SETUP
 #line 72 "../src/integrador.l"
-{strcpy(yylval.cadena, yytext); return IDENTIFICADOR;}
+{ yylval.cadena = strdup(yytext); return IDENTIFICADOR;  }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 74 "../src/integrador.l"
-{strcpy(yylval.cadena, yytext); return CONSTANTE_CADENA;        }
+{ yylval.cadena = strdup(yytext); return CONSTANTE_CADENA;      }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP

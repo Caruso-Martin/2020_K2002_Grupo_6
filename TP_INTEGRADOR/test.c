@@ -1,17 +1,11 @@
-;
-{ int a = 9, b; }
-{ if(a > 4) { a *= 4 } else { a += 6} }
-for( ; a++; ) { }
-switch(4){
-    default: a++;
-    break;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(){
+    void  b = 1;
+    int a = 1, c = a + b;
+
+    printf("Res:%i", c);
+    
 }
-int funcion(int *);
-int funcionB(int * a, char b);
-void funcionC() {
-    while(4 > 5) {
-    ;
-    }
-}
-#
-hola

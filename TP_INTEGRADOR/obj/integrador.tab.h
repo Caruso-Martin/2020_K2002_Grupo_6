@@ -81,9 +81,9 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 17 "../src/integrador.y"
+#line 18 "../src/integrador.y"
 
-    char cadena[100];
+    char* cadena;
     int entero;
     float real;
 

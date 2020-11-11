@@ -70,10 +70,11 @@
 /* Line 189 of yacc.c  */
 #line 1 "../src/integrador.y"
 
-    #include <stdio.h>
     #include <ctype.h>
+    #include <stdio.h>
     #include <string.h>
     #include <stdlib.h>
+    //#include "tabla_simbolos.c"
 
     int yylex();
     int yywrap(){ return(1); }
@@ -86,7 +87,7 @@
 
 
 /* Line 189 of yacc.c  */
-#line 90 "integrador.tab.c"
+#line 91 "integrador.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -155,16 +156,16 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 17 "../src/integrador.y"
+#line 18 "../src/integrador.y"
 
-    char cadena[100];
+    char* cadena;
     int entero;
     float real;
 
 
 
 /* Line 214 of yacc.c  */
-#line 168 "integrador.tab.c"
+#line 169 "integrador.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -176,7 +177,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 180 "integrador.tab.c"
+#line 181 "integrador.tab.c"
 
 #ifdef short
 # undef short
@@ -512,7 +513,7 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    71,    71,    72,    75,    76,    77,    78,    83,    84,
+       0,    72,    72,    73,    76,    77,    78,    79,    83,    84,
       87,    88,    89,    92,    93,    96,    97,   100,   101,   104,
      105,   108,   109,   112,   113,   116,   117,   120,   121,   124,
      125,   128,   129,   130,   133,   134,   135,   138,   139,   142,
@@ -1647,171 +1648,157 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 4:
+        case 6:
 
 /* Line 1455 of yacc.c  */
-#line 75 "../src/integrador.y"
-    { yylineno++; ;}
-    break;
-
-  case 5:
-
-/* Line 1455 of yacc.c  */
-#line 76 "../src/integrador.y"
-    { yylineno++; ;}
-    break;
-
-  case 6:
-
-/* Line 1455 of yacc.c  */
-#line 77 "../src/integrador.y"
-    { strcpy((yyval.cadena), (yyvsp[(1) - (2)].cadena)); printf("\n***Error sintactico - Linea %i: %s***\n", yylineno, (yyvsp[(1) - (2)].cadena)); yylineno++; ;}
+#line 78 "../src/integrador.y"
+    { strcpy((yyval.cadena), (yyvsp[(1) - (2)].cadena)); printf("\n***Error sintactico - Linea %i: %s***", yylineno, (yyvsp[(1) - (2)].cadena)); ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 78 "../src/integrador.y"
-    { strcpy((yyval.cadena), (yyvsp[(1) - (2)].cadena)); printf("\n***Error sintactico - Linea %i: %s***\n", yylineno, (yyvsp[(1) - (2)].cadena)); yylineno++; ;}
+#line 79 "../src/integrador.y"
+    { strcpy((yyval.cadena), (yyvsp[(1) - (2)].cadena)); printf("\n***Error sintactico - Linea %i: %s***", yylineno, (yyvsp[(1) - (2)].cadena)); ;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
 #line 192 "../src/integrador.y"
-    {printf("de tipo %s.\n", (yyvsp[(1) - (3)].cadena));;}
+    {printf(" - TIPO: %s", (yyvsp[(1) - (3)].cadena));;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
 #line 195 "../src/integrador.y"
-    { printf("\nSe declaro una variable ");    ;}
+    { printf("\nDECLARACION - VARIABLE/S: %s", (yyvsp[(1) - (1)].cadena));   ;}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
 #line 196 "../src/integrador.y"
-    { printf("y otra variable ");            ;}
+    { printf(", %s", (yyvsp[(3) - (3)].cadena));                             ;}
     break;
 
   case 79:
 
 /* Line 1455 of yacc.c  */
 #line 214 "../src/integrador.y"
-    { printf("\nSe declaro una funcion"); ;}
+    { printf("\nDECLARACION - FUNCION: %s - TIPO: %s", (yyvsp[(2) - (6)].cadena), (yyvsp[(1) - (6)].cadena));    ;}
     break;
 
   case 80:
 
 /* Line 1455 of yacc.c  */
 #line 215 "../src/integrador.y"
-    { printf("\nSe definio una funcion"); ;}
+    { printf("\nDEFINICION - FUNCION\: %s - TIPO\: %s", (yyvsp[(2) - (6)].cadena), (yyvsp[(1) - (6)].cadena));   ;}
+    break;
+
+  case 86:
+
+/* Line 1455 of yacc.c  */
+#line 229 "../src/integrador.y"
+    { printf(" (PUNTERO) ");  ;}
     break;
 
   case 91:
 
 /* Line 1455 of yacc.c  */
 #line 238 "../src/integrador.y"
-    { printf("\nSe declaro un arreglo");  ;}
+    { printf(" (ARREGLO) ");  ;}
     break;
 
   case 99:
 
 /* Line 1455 of yacc.c  */
 #line 253 "../src/integrador.y"
-    { printf("Sentencia expresion - VACIA.\n");   ;}
-    break;
-
-  case 100:
-
-/* Line 1455 of yacc.c  */
-#line 254 "../src/integrador.y"
-    { printf("Sentencia expresion         \n");   ;}
+    { printf("\nSENTENCIA - EXPRESION:  VACIA");   ;}
     break;
 
   case 101:
 
 /* Line 1455 of yacc.c  */
 #line 257 "../src/integrador.y"
-    { printf("Sentencia expresion - COMPUESTA.\n");   ;}
+    { printf("\nSENTENCIA - EXPRESION:  COMPUESTA");   ;}
     break;
 
   case 106:
 
 /* Line 1455 of yacc.c  */
 #line 268 "../src/integrador.y"
-    { printf("Sentencia de SELECCION - IF.     \n");    ;}
+    { printf("\nSENTENCIA - SELECCION:  IF     ");    ;}
     break;
 
   case 107:
 
 /* Line 1455 of yacc.c  */
 #line 269 "../src/integrador.y"
-    { printf("Sentencia de SELECCION - IF/ELSE.\n");    ;}
+    { printf("\nSENTENCIA - SELECCION:  IF/ELSE");    ;}
     break;
 
   case 108:
 
 /* Line 1455 of yacc.c  */
 #line 270 "../src/integrador.y"
-    { printf("Sentencia de SELECCION - SWITCH. \n");    ;}
+    { printf("\nSENTENCIA - SELECCION:  SWITCH ");    ;}
     break;
 
   case 112:
 
 /* Line 1455 of yacc.c  */
 #line 278 "../src/integrador.y"
-    { printf("Sentencia de ITERACION - WHILE.   \n");   ;}
+    { printf("\nSENTENCIA - ITERACION:  WHILE   ");   ;}
     break;
 
   case 113:
 
 /* Line 1455 of yacc.c  */
 #line 279 "../src/integrador.y"
-    { printf("Sentencia de ITERACION - DO/WHILE.\n");   ;}
+    { printf("\nSENTENCIA - ITERACION:  DO/WHILE");   ;}
     break;
 
   case 114:
 
 /* Line 1455 of yacc.c  */
 #line 280 "../src/integrador.y"
-    { printf("Sentencia de ITERACION - FOR.     \n");   ;}
+    { printf("\nSENTENCIA - ITERACION:  FOR     ");   ;}
     break;
 
   case 115:
 
 /* Line 1455 of yacc.c  */
 #line 283 "../src/integrador.y"
-    { printf("Sentencia de SALTO - CONTINUE.\n");   ;}
+    { printf("\nSENTENCIA - SALTO:  CONTINUE");   ;}
     break;
 
   case 116:
 
 /* Line 1455 of yacc.c  */
 #line 284 "../src/integrador.y"
-    { printf("Sentencia de SALTO - BREAK.   \n");   ;}
+    { printf("\nSENTENCIA - SALTO:  BREAK   ");   ;}
     break;
 
   case 117:
 
 /* Line 1455 of yacc.c  */
 #line 285 "../src/integrador.y"
-    { printf("Sentencia de SALTO - RETURN.  \n");   ;}
+    { printf("\nSENTENCIA - SALTO:  RETURN  ");   ;}
     break;
 
   case 118:
 
 /* Line 1455 of yacc.c  */
 #line 286 "../src/integrador.y"
-    { printf("Sentencia de SALTO - GOTO.    \n");   ;}
+    { printf("\nSENTENCIA - SALTO:  GOTO    ");   ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1815 "integrador.tab.c"
+#line 1802 "integrador.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

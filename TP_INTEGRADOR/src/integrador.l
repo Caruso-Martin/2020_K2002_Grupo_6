@@ -5,8 +5,8 @@
     #include <string.h>
 %}
 
-%option noyywrap
 %option yylineno
+%option noyywrap
 
 OPERADOR_ASIGNACION ("*="|"/="|"%="|"+="|"*="|"<<="|">>="|"&="|"^="|"|=") 
 OPERADOR_O_LOGICO "||"
@@ -54,7 +54,7 @@ SECUENCIA_ESCAPE_SIMPLE (a|b|f|n|r|t|v|\'|\"|\?|\\)
 "return"    { return RETURN;    }
 "goto"      { return GOTO;      }
 
-{TIPO_DATO}                     { strcpy(yylval.cadena, yytext); return TIPO_DATO;                          }
+{TIPO_DATO}                     { yylval.cadena = strdup(yytext); return TIPO_DATO; }
                         
 {OPERADOR_ASIGNACION}           { return OPERADOR_ASIGNACION;           }       
 {OPERADOR_O_LOGICO}             { return OPERADOR_O_LOGICO;             }         
@@ -69,9 +69,9 @@ SECUENCIA_ESCAPE_SIMPLE (a|b|f|n|r|t|v|\'|\"|\?|\\)
 {OPERADOR_SIZEOF}               { return OPERADOR_SIZEOF;               }           
 {OPERADOR_SELECCION_MIEMBRO}    { return OPERADOR_SELECCION_MIEMBRO;    }
 
-[a-zA-Z_][a-zA-Z0-9_]*  {strcpy(yylval.cadena, yytext); return IDENTIFICADOR;}
+[a-zA-Z_][a-zA-Z0-9_]*  { yylval.cadena = strdup(yytext); return IDENTIFICADOR;  }
 
-\"(([^\"]|\\\")*[^\\])?\"                                                                                   {strcpy(yylval.cadena, yytext); return CONSTANTE_CADENA;        }
+\"(([^\"]|\\\")*[^\\])?\"                                                                                   { yylval.cadena = strdup(yytext); return CONSTANTE_CADENA;      }
 {DIGITO_DECIMAL_SIN_CERO}{DIGITO_DECIMAL}*{SUFIJO_ENTERO}?                                                  { yylval.entero = atoi(yytext); return CONSTANTE_DECIMAL;       }
 0{DIGITO_OCTAL}*{SUFIJO_ENTERO}?                                                                            { yylval.entero = atoi(yytext); return CONSTANTE_OCTAL;         }
 0[xX]{DIGITO_HEXADECIMAL}+{SUFIJO_ENTERO}?                                                                  { yylval.entero = atoi(yytext); return CONSTANTE_HEXADECIMAL;   }
