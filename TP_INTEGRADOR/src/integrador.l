@@ -19,7 +19,6 @@ OPERADOR_CORRIMIENTO ("<<"|">>")
 OPERADOR_MULTIPLICATIVO ("/"|"%")
 OPERADOR_INCREMENTO ("++"|"--")
 OPERADOR_SIZEOF "sizeof"
-OPERADOR_SELECCION_MIEMBRO ("."|"->")
 
 TIPO_DATO ("void"|"char"|"short"|"int"|"long"|"float"|"double"|"signed"|"unsigned")
 
@@ -67,7 +66,6 @@ SECUENCIA_ESCAPE_SIMPLE (a|b|f|n|r|t|v|\'|\"|\?|\\)
 {OPERADOR_MULTIPLICATIVO}       { return OPERADOR_MULTIPLICATIVO;       }   
 {OPERADOR_INCREMENTO}           { return OPERADOR_INCREMENTO;           }                  
 {OPERADOR_SIZEOF}               { return OPERADOR_SIZEOF;               }           
-{OPERADOR_SELECCION_MIEMBRO}    { return OPERADOR_SELECCION_MIEMBRO;    }
 
 [a-zA-Z_][a-zA-Z0-9_]*  { yylval.cadena = strdup(yytext); return IDENTIFICADOR;  }
 

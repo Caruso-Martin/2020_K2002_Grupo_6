@@ -35,10 +35,9 @@
 %token <cadena> OPERADOR_IGUALDAD                   // == !=
 %token <cadena> OPERADOR_RELACIONAL                 // < > <= >=
 %token <cadena> OPERADOR_CORRIMIENTO                // << >>
-%token <cadena> OPERADOR_MULTIPLICATIVO             // * / %
+%token <cadena> OPERADOR_MULTIPLICATIVO             // * 
 %token <cadena> OPERADOR_INCREMENTO                 // ++ --
 %token <cadena> OPERADOR_SIZEOF                     // sizeof
-%token <cadena> OPERADOR_SELECCION_MIEMBRO          // . ->
 
 // CONSTANTES
 %token <cadena> CONSTANTE_CADENA                    // "*"
@@ -156,13 +155,12 @@ operadorUnario:'&'
 
 expresionSufijo: expresionPrimaria 
     | expresionSufijo '[' expresion ']' /* arreglo */           
-    | expresionSufijo '(' listaArgumentos_ ')' /* invocacion */ {printf("Identificador: %s\n", $<cadena>1);}
-    | expresionSufijo OPERADOR_SELECCION_MIEMBRO IDENTIFICADOR  
+    | expresionSufijo '(' listaArgumentos_ ')' /* invocacion */ {printf("\nIdentificador: %s", $<cadena>1);}
     | expresionSufijo OPERADOR_INCREMENTO                       
     ;
 
-listaArgumentos: expresionAsignacion {printf("parametro: %s\n", $<cadena>1);}
-    | listaArgumentos ',' expresionAsignacion {printf("parametro\: %s\n", $<cadena>3); }
+listaArgumentos: expresionAsignacion {printf("\nparametro: %s", $<cadena>1);}
+    | listaArgumentos ',' expresionAsignacion {printf("\nparametro\: %s", $<cadena>3); }
     ;
 
 expresionPrimaria: IDENTIFICADOR 
@@ -189,16 +187,10 @@ declaracion: declaracionVariable
 
 /** Variables **/
 
-//opcionSaltos: /* */ 
-//    | '\n'
-//    | opcionSaltos '\n'
-//    ;   //(ELIMINAR)
-
-
-declaracionVariable: TIPO_DATO  listaDeclaradores  ';' {printf(" - TIPO: %s", $<cadena>1, yylineno);} 
+declaracionVariable: TIPO_DATO  listaDeclaradores  ';' {printf(" - TIPO: %s", $<cadena>1);} 
     ;
 
-listaDeclaradores: declarador           { printf("\n%i - DECLARACION - VARIABLE/S: %s", $<cadena>1, yylineno);   }
+listaDeclaradores: declarador           { printf("\nLinea %i - DECLARACION - VARIABLE/S: %s", yylineno, $<cadena>1);   }
     | listaDeclaradores ',' declarador  { printf(", %s", $<cadena>3);                                            }  
     ;
 
@@ -217,11 +209,11 @@ listaInicializadores: inicializador
 
 /** Funciones **/
 
-declaracionFuncion: TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' ';'     { printf("\n%i - DECLARACION - FUNCION: %s - TIPO: %s", $<cadena>2, $<cadena>1, yylineno);    }
-    | TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' sentenciaCompuesta    { printf("\n%i - DEFINICION - FUNCION\: %s - TIPO\: %s", $<cadena>2, $<cadena>1, yylineno);   }
+declaracionFuncion: TIPO_DATO  IDENTIFICADOR '(' listaParametros_ ')' ';'     { printf("\nLinea %i - DECLARACION - FUNCION: %s - TIPO: %s", yylineno, $<cadena>2, $<cadena>1);    }
+    | TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' sentenciaCompuesta    { printf("\nLinea %i - DEFINICION - FUNCION\: %s - TIPO\: %s", yylineno, $<cadena>2, $<cadena>1);   }
     ;
 
-listaParametros: parametro
+listaParametros: parametro { printf("\n%s", $<cadena>1);   }
     | listaParametros ',' parametro 
     ;
 
@@ -256,11 +248,11 @@ sentencia: sentenciaExpresion
 sentenciaExpresion: expresion_s ';'
     ;
 
-expresion_s: /* */  { printf("\n%i - SENTENCIA - EXPRESION:  VACIA", yylineno);   }
-    | expresion     /*{ printf("\n%i - SENTENCIA - EXPRESION", yylineno);   }*/   
+expresion_s: /* */  { printf("\nLinea %i - SENTENCIA - EXPRESION:  VACIA", yylineno);   }
+    | expresion     /*{ printf("\nLinea %i - SENTENCIA - EXPRESION", yylineno);   }*/   
     ;
 
-sentenciaCompuesta: '{' listaDeclaraciones_ listaSentencias_ '}'    { printf("\n%i - SENTENCIA - EXPRESION:  COMPUESTA", yylineno);   }
+sentenciaCompuesta: '{' listaDeclaraciones_ listaSentencias_ '}'    { printf("\nLinea %i - SENTENCIA - EXPRESION:  COMPUESTA", yylineno);   }
     ;
 
 listaDeclaraciones: declaracion 
@@ -271,9 +263,9 @@ listaSentencias: sentencia
     | listaSentencias sentencia
     ;
 
-sentenciaSeleccion: IF '(' expresion ')' sentencia  { printf("\n%i - SENTENCIA - SELECCION:  IF     ", yylineno);    }    
-    | IF '(' expresion ')' sentencia ELSE sentencia { printf("\n%i - SENTENCIA - SELECCION:  IF/ELSE", yylineno);    } 
-    | SWITCH '(' expresion ')' sentencia            { printf("\n%i - SENTENCIA - SELECCION:  SWITCH ", yylineno);    }
+sentenciaSeleccion: IF '(' expresion ')' sentencia  { printf("\nLinea %i - SENTENCIA - SELECCION:  IF     ", yylineno);    }    
+    | IF '(' expresion ')' sentencia ELSE sentencia { printf("\nLinea %i - SENTENCIA - SELECCION:  IF/ELSE", yylineno);    } 
+    | SWITCH '(' expresion ')' sentencia            { printf("\nLinea %i - SENTENCIA - SELECCION:  SWITCH ", yylineno);    }
     ;
 
 sentenciaEtiquetada: CASE expresionConstante ':' sentencia 
@@ -281,15 +273,15 @@ sentenciaEtiquetada: CASE expresionConstante ':' sentencia
     | IDENTIFICADOR ':' sentencia /*Las sentencias case y default se utilizan solo dentro de una sentencia switch.*/
     ;
 
-sentenciaIteracion: WHILE '(' expresion ')' sentencia               { printf("\n%i - SENTENCIA - ITERACION:  WHILE   ", yylineno);   } 
-    | DO sentencia WHILE '(' expresion ')' ';'                      { printf("\n%i - SENTENCIA - ITERACION:  DO/WHILE", yylineno);   } 
-    | FOR '(' expresion_';' expresion_ ';' expresion_ ')' sentencia { printf("\n%i - SENTENCIA - ITERACION:  FOR     ", yylineno);   }
+sentenciaIteracion: WHILE '(' expresion ')' sentencia               { printf("\nLinea %i - SENTENCIA - ITERACION:  WHILE   ", yylineno);   } 
+    | DO sentencia WHILE '(' expresion ')' ';'                      { printf("\nLinea %i - SENTENCIA - ITERACION:  DO/WHILE", yylineno);   } 
+    | FOR '(' expresion_';' expresion_ ';' expresion_ ')' sentencia { printf("\nLinea %i - SENTENCIA - ITERACION:  FOR     ", yylineno);   }
     ;
 
-sentenciaSalto: CONTINUE ';'    { printf("\n%i - SENTENCIA - SALTO:  CONTINUE", yylineno);   }
-    | BREAK ';'                 { printf("\n%i - SENTENCIA - SALTO:  BREAK   ", yylineno);   } 
-    | RETURN expresion_ ';'     { printf("\n%i - SENTENCIA - SALTO:  RETURN  ", yylineno);   } 
-    | GOTO IDENTIFICADOR ';'    { printf("\n%i - SENTENCIA - SALTO:  GOTO    ", yylineno);   }
+sentenciaSalto: CONTINUE ';'    { printf("\nLinea %i - SENTENCIA - SALTO:  CONTINUE", yylineno);   }
+    | BREAK ';'                 { printf("\nLinea %i - SENTENCIA - SALTO:  BREAK   ", yylineno);   } 
+    | RETURN expresion_ ';'     { printf("\nLinea %i - SENTENCIA - SALTO:  RETURN  ", yylineno);   } 
+    | GOTO IDENTIFICADOR ';'    { printf("\nLinea %i - SENTENCIA - SALTO:  GOTO    ", yylineno);   }
     ;
 
 

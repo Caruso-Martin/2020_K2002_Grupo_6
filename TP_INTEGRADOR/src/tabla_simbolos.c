@@ -2,11 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-// STRUCT
+/* ************* COLORES PARA ERRORES ************* */
+
+#define C_RED     "\x1b[31m"
+#define C_GREEN   "\x1b[32m"
+#define C_YELLOW  "\x1b[33m"
+#define C_BLUE    "\x1b[34m"
+#define C_MAGENTA "\x1b[35m"
+#define C_CYAN    "\x1b[36m"
+#define C_RESET   "\x1b[0m"
+
+
+/* ************* ESTRUCTURAS DE LA TABLA DE SIMBOLOS ************* */
 struct parametro {
     char* tipoParametro;
     struct parametro* siguiente;
-};
+} * tablaParametros = NULL;
 
 struct SYM_TBL {
     char* identificador;
@@ -14,13 +25,15 @@ struct SYM_TBL {
     int tipoDeclaracion;    // 0 = Variable | 1 = Funcion 
     struct parametro* tiposParametros;    
     struct SYM_TBL* siguiente;
-} * tablaSimbolos = NULL, * dobleDeclaracion = NULL;
+} * tablaSimbolos = NULL, * tablaDobleDeclaracion = NULL;
 
-// PROTOTIPO
+/* ************* PROTOTIPOS ************* */
+// INGRESAR
 void pushParametro(struct parametro**, char*);
 void pushSimbolo(struct SYM_TBL**, char*, char*, int);
 //void pushSimboloSinRepetir(struct SYM_TBL**, char*, int);
 
+// IMPRIMIR
 void mostrarParametros(struct parametro*);
 void mostrarSimbolos(struct SYM_TBL*);
 
@@ -28,7 +41,7 @@ int cantidadParametros(struct parametro**);
 int estaDeclarado(struct SYM_TBL**, char*);
 
 
-// PUSH
+/* ************* INGRESAR ************* */
 void pushParametro(struct parametro** cabeza, char* nuevoTipoParametro) { 
     struct parametro* nuevoNodo = (struct parametro*) malloc(sizeof(struct parametro)); 
 
@@ -58,11 +71,11 @@ void pushSimboloSinRepetir(struct SYM_TBL** cabeza, char* nuevaCadena, char* nue
     if(estaDeclarado(cabeza, nuevaCadena)){
         pushSimbolo(&tablaSimbolos, nuevaCadena, nuevoTipo, nuevaTipoDeclaracion);
     } else {
-        pushSimbolo(&dobleDeclaracion, nuevaCadena, nuevoTipo, nuevaTipoDeclaracion);
+        pushSimbolo(&tablaDobleDeclaracion, nuevaCadena, nuevoTipo, nuevaTipoDeclaracion);
     }
 }
 
-// MOSTRAR LISTAS
+/* ************* IMPRIMIR ************* */
 void mostrarParametros(struct parametro* lista){
     if (lista == NULL)
         return;
@@ -118,7 +131,6 @@ int cantidadParametros(struct parametro** parametros) {
 
     return cantidad;
 }
-
 struct SYM_TBL* buscarIdentificadorEnTabla(struct SYM_TBL* tabla, char* identificador) {
     struct SYM_TBL* temporal = tabla;
 
@@ -128,20 +140,18 @@ struct SYM_TBL* buscarIdentificadorEnTabla(struct SYM_TBL* tabla, char* identifi
     
     return temporal;
 }
-
-/*int cantidadParametrosCorrecta(struct parametros** tabla, char* identificadorIngreso) {
+int cantidadParametrosCorrecta(struct SYM_TBL** invocacion) {
     int cantidad = 0;
 
-    struct parametros* temporal = (*tabla);
+    struct SYM_TBL* temporal = (*invocacion);
 
-    while (temporal != NULL) {
+     while (temporal->tiposParametros != NULL) {
         cantidad++;
-        temporal = (*temporal)->siguiente;
+        temporal->tiposParametros = temporal->tiposParametros->siguiente;
     }
 
     return cantidad;
-}*/
-
+}
 
 
 // VALIDACIONES SEMANTICAS
@@ -189,21 +199,32 @@ int validacionTipos(char* identificadorA, char* identificadorB) {
 
 }*/
 
+
 int main() {
+
+    //struct SYM_TBL* invocacion = NULL; 
+
     printf("\n/* ********** Advertencias y errores ********** */\n");
     pushSimboloSinRepetir(&tablaSimbolos, "funcion_1", "int", 1);
     pushParametro(&(tablaSimbolos->tiposParametros), "int"   );
     pushParametro(&(tablaSimbolos->tiposParametros), "double");
     pushParametro(&(tablaSimbolos->tiposParametros), "char"  );
 
-    pushSimbolo(&tablaSimbolos, "variable_1", "int", 0);
+    //pushSimboloSinRepetir(&invocacion, "funcion_2", "int", 1);
+    pushParametro(&(tablaSimbolos->tiposParametros), "int"   );
+    pushParametro(&(tablaSimbolos->tiposParametros), "double");
+    pushParametro(&(tablaSimbolos->tiposParametros), "char"  );
+
+    //printf("\nCantidad : %s\n", cantidadParametrosCorrecta(&tablaSimbolos));
+
+    pushSimboloSinRepetir(&tablaSimbolos, "variable_1", "int", 0);
 
     pushSimboloSinRepetir(&tablaSimbolos, "funcion_2", "void", 1);
     pushParametro(&(tablaSimbolos->tiposParametros), "double");
     pushParametro(&(tablaSimbolos->tiposParametros), "char"  );
 
     pushSimboloSinRepetir(&tablaSimbolos, "funcion_1", "void", 1);
-    pushParametro(&(dobleDeclaracion->tiposParametros), "int"   ); // Modificar
+    pushParametro(&(tablaDobleDeclaracion->tiposParametros), "int"   ); // Modificar
 
     pushSimboloSinRepetir(&tablaSimbolos, "variable_2", "short", 0);
 
@@ -215,6 +236,6 @@ int main() {
     mostrarSimbolos(tablaSimbolos);
 
     printf("\n\n/* ********** Doble declaracion ********** */");
-    mostrarSimbolos(dobleDeclaracion);
+    mostrarSimbolos(tablaDobleDeclaracion);
 
 }
