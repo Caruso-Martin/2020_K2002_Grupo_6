@@ -138,7 +138,7 @@ expresionAditiva: expresionMultiplicativa
     ;
 
 expresionMultiplicativa: expresionConversion 
-    | expresionMultiplicativa '*' expresionConversion { validacionTipos($<cadena>1, $<cadena>3) }
+    | expresionMultiplicativa '*' expresionConversion 
     | expresionMultiplicativa OPERADOR_MULTIPLICATIVO expresionConversion  
     ;
 
