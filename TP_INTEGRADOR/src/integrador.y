@@ -69,8 +69,9 @@
 %token <cadena> GOTO
 
 /* %type <tipo>   */ 
+%type <cadena> expresionSufijo
+
 %type <cadena> declaracionVariable
-//%type <cadena> listaDeclaradores
 %type <cadena> declarador
 %type <cadena> decla
 %type <cadena> declaradorDirecto
@@ -163,12 +164,12 @@ operadorUnario:'&'
 
 expresionSufijo: expresionPrimaria 
     | expresionSufijo '[' expresion ']' /* arreglo */           
-    | expresionSufijo '(' listaArgumentos_ ')' /* invocacion */ {printf("\nIdentificador: %s", $<cadena>1);}
+    | expresionSufijo '(' listaArgumentos_ ')' { pushSimbolo(&tablaAuxiliar, $<cadena>1, "-", 1);  tablaAuxiliar->tiposParametros = tablaParametros; validacionInvocacion(tablaAuxiliar); tablaParametros = NULL; tablaAuxiliar = NULL; }
     | expresionSufijo OPERADOR_INCREMENTO                       
     ;
 
-listaArgumentos: expresionAsignacion {printf("\nparametro: %s", $<cadena>1);}
-    | listaArgumentos ',' expresionAsignacion {printf("\nparametro\: %s", $<cadena>3); }
+listaArgumentos: expresionAsignacion { pushParametro(&tablaParametros, $<cadena>1); } 
+    | listaArgumentos ',' expresionAsignacion { pushParametro(&tablaParametros, $<cadena>3); } 
     ;
 
 expresionPrimaria: IDENTIFICADOR 

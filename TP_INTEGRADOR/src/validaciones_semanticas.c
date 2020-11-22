@@ -281,8 +281,14 @@ int tipoParametrosCorrecto(struct SYM_TBL* invocacion){
     struct parametro* temporal = invocacion->tiposParametros;
     struct parametro* comparacion = obtenerParametros(invocacion->identificador);
 
+    struct SYM_TBL* idA = obtenerIdentificador(temporal->tipoParametro);
     while (temporal != NULL && comparacion != NULL) {
-        if(strcmp(temporal->tipoParametro, comparacion->tipoParametro)) 
+        if(obtenerIdentificador(temporal->tipoParametro) != NULL)
+            idA = obtenerIdentificador(temporal->tipoParametro);
+        else
+            return 0;
+        
+        if(strcmp(idA->tipo, comparacion->tipoParametro)) 
             return 0;
         
         comparacion = comparacion->siguiente;
@@ -295,17 +301,19 @@ int validacionInvocacion(struct SYM_TBL* invocacion){
     struct SYM_TBL* temporal = invocacion;
 
     if(!estaDeclarado(temporal->identificador)){
-        printf(C_MAGENTA "\nAtencion: Invocacion sin declaracion previa\n" C_RESET);
+        printf("\nAtencion: Invocacion sin declaracion previa - Funcion: %s\n", temporal->identificador);
+        
+        
         return 0;
     }
 
     if(!cantidadParametrosCorrecta(temporal)){
-        printf("\nAtencion: Invocacion con cantidad incorrecta de parametros\n");
+        printf("\nAtencion: Invocacion con cantidad incorrecta de parametros - Funcion: %s\n", temporal->identificador);
         return 0;
     }
 
     if(!tipoParametrosCorrecto(temporal)){
-        printf("\nAtencion: Invocacion con tipo/s incorrectos\n");
+        printf("\nAtencion: Invocacion con tipo/s incorrectos - Funcion: %s\n", temporal->identificador);
         return 0;
     }
 
