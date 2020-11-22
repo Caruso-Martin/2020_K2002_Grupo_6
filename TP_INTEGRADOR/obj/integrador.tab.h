@@ -51,26 +51,25 @@
      OPERADOR_MULTIPLICATIVO = 267,
      OPERADOR_INCREMENTO = 268,
      OPERADOR_SIZEOF = 269,
-     OPERADOR_SELECCION_MIEMBRO = 270,
-     CONSTANTE_CADENA = 271,
-     CONSTANTE_DECIMAL = 272,
-     CONSTANTE_OCTAL = 273,
-     CONSTANTE_HEXADECIMAL = 274,
-     CONSTANTE_REAL = 275,
-     CONSTANTE_CARACTER = 276,
-     TIPO_DATO = 277,
-     IF = 278,
-     ELSE = 279,
-     SWITCH = 280,
-     WHILE = 281,
-     DO = 282,
-     FOR = 283,
-     CASE = 284,
-     DEFAULT = 285,
-     CONTINUE = 286,
-     BREAK = 287,
-     RETURN = 288,
-     GOTO = 289
+     CONSTANTE_CADENA = 270,
+     CONSTANTE_DECIMAL = 271,
+     CONSTANTE_OCTAL = 272,
+     CONSTANTE_HEXADECIMAL = 273,
+     CONSTANTE_REAL = 274,
+     CONSTANTE_CARACTER = 275,
+     TIPO_DATO = 276,
+     IF = 277,
+     ELSE = 278,
+     SWITCH = 279,
+     WHILE = 280,
+     DO = 281,
+     FOR = 282,
+     CASE = 283,
+     DEFAULT = 284,
+     CONTINUE = 285,
+     BREAK = 286,
+     RETURN = 287,
+     GOTO = 288
    };
 #endif
 
@@ -81,7 +80,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 18 "../src/integrador.y"
+#line 21 "../src/integrador.y"
 
     char* cadena;
     int entero;
@@ -90,7 +89,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 94 "integrador.tab.h"
+#line 93 "integrador.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -12,6 +12,12 @@
 #define C_CYAN    "\x1b[36m"
 #define C_RESET   "\x1b[0m"
 
+struct contadorDeclaradores {
+    int punteros;
+    int dimensiones;
+} contador = {0, 0};
+
+
 /* *************..ESTRUCTURA DE TABLA DE SIMBOLOS..************* */
 struct parametro {
     char* tipoParametro;
@@ -72,6 +78,15 @@ void pushParametro(struct parametro** cabeza, char* nuevoTipoParametro) {
     nuevoNodo->siguiente = (*cabeza); 
     (*cabeza) = nuevoNodo; 
 }  
+void pushParametros(char* identificador) {
+    if(!estaDoblementeDeclarado(identificador))
+        tablaSimbolos->tiposParametros = tablaParametros;
+    else
+        tablaDobleDeclaracion->tiposParametros = tablaParametros;
+    
+    tablaParametros = NULL;
+}
+  
 void pushSimbolo(struct SYM_TBL** tabla, char* nuevoIdentificador, char* nuevoTipo, int nuevoTipoDeclaracion) { 
     struct SYM_TBL* nuevoNodo = (struct SYM_TBL*) malloc(sizeof(struct SYM_TBL)); 
 
@@ -98,6 +113,16 @@ char* agregadorDeclarador(char * tipoDato, char * declarador, int cantidad) {
     }
     
     return temporal;
+}
+
+char* agregadorDeclaradores(char * tipoDato) {
+    tipoDato = agregadorDeclarador(tipoDato, "*", contador.punteros);
+    tipoDato = agregadorDeclarador(tipoDato, "[]", contador.dimensiones);
+
+    contador.punteros = 0;
+    contador.dimensiones = 0;
+
+    return tipoDato;
 }
 void eliminarDeclarador(char * tipoDato, char declarador){ 
   
@@ -189,6 +214,7 @@ struct parametro* obtenerParametros(char* identificador) {
 }
 
 /* *************..CONTROL - DOBLE DE DECLARACION...************* */
+
 void pushParametroSinRepetir(char* nuevaCadena, char* nuevoTipoParametro) { 
     if(!estaDoblementeDeclarado(nuevaCadena)) {
         pushParametro(&(tablaSimbolos->tiposParametros), nuevoTipoParametro);
@@ -220,19 +246,14 @@ int validacionTipos(char* identificadorA, char* identificadorB) {
     struct SYM_TBL* idB = obtenerIdentificador(identificadorB);
 
     if(strcmp(idA->tipo, idB->tipo) && strstr(idA->tipo,"void") == NULL && strstr(idB->tipo, "void") == NULL) { // Tipos distintos, no void
-        printf("Nota: Conversion implicita de %s a %s\n", idB->tipo, idA->tipo);
-        printf("I: %s T:%s - I: %s T: %s\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
-        
+        printf("\nNota: Conversion implicita (Identificador: %s Tipo: %s - Identificador: %s Tipo: %s)\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
         return 0;
     } else if(strstr(idA->tipo, "void") != NULL || strstr(idB->tipo, "void") != NULL) { // Algun void
-        printf("Error: no se puede declarar una variable de tipo void\n", idA->tipo, idB->tipo);
-        printf("I: %s T:%s - I: %s T: %s\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
+        printf("\nError: no se puede declarar una variable de tipo void (Identificador: %s Tipo: %s - Identificador: %s Tipo: %s)\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
         
         return 1;
     }
     
-    printf("I: %s T:%s - I: %s T: %s\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
-    printf("Son del mismo tipo\n");
     
     return 0;
 }
@@ -291,11 +312,11 @@ int validacionInvocacion(struct SYM_TBL* invocacion){
     return 1;
 }
 
-int main() {
-    char* tipoAuxiliar = "int"; //Para declaraciones "listaDeclaradores ',' declarador"
-    int contadorPunteros = 5;
-    int contadorArreglos = 2;
-    int contadorReferencia = 1;
+//int main() {
+    //char* tipoAuxiliar = "int"; //Para declaraciones "listaDeclaradores ',' declarador"
+    //int contadorPunteros = 5;
+    //int contadorArreglos = 2;
+    //int contadorReferencia = 1;
 
     /*// Casos de Uso - Declaracion - Variable
     pushSimbolo(&tablaSimbolos, "variable_1", tipoAuxiliar, 0);    // Declaracion de variable
@@ -364,9 +385,9 @@ int main() {
     pushParametroSinRepetir("funcion_1", "char"  );
     */
    
-    printf("\n/* ********** Tabla de simbolos ********** */");
-    mostrarSimbolos(tablaSimbolos);
+    //printf("\n/* ********** Tabla de simbolos ********** */");
+    //mostrarSimbolos(tablaSimbolos);
     
-    printf("\n\n/* ********** Doble declaracion ********** */");
-    mostrarSimbolos(tablaDobleDeclaracion);
-}
+    //printf("\n\n/* ********** Doble declaracion ********** */");
+    //mostrarSimbolos(tablaDobleDeclaracion);
+//}

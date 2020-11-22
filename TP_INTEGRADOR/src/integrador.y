@@ -3,7 +3,7 @@
     #include <stdio.h>
     #include <string.h>
     #include <stdlib.h>
-    //#include "tabla_simbolos.c"
+    #include "validaciones_semanticas.c"
 
     int yylex();
     int yywrap(){ return(1); }
@@ -12,6 +12,9 @@
     FILE* yyin;
 
     extern int yylineno;
+
+    char* tipoAuxiliar = "";
+    char* identificadorAuxiliar = ""; 
 
 %}
 
@@ -66,6 +69,11 @@
 %token <cadena> GOTO
 
 /* %type <tipo>   */ 
+%type <cadena> declaracionVariable
+//%type <cadena> listaDeclaradores
+%type <cadena> declarador
+%type <cadena> decla
+%type <cadena> declaradorDirecto
 
 %%
 input: /* */
@@ -130,7 +138,7 @@ expresionAditiva: expresionMultiplicativa
     ;
 
 expresionMultiplicativa: expresionConversion 
-    | expresionMultiplicativa '*' expresionConversion {printf("Multiplicacion: %s y %s\n", $<cadena>1, $<cadena>3);}
+    | expresionMultiplicativa '*' expresionConversion { validacionTipos($<cadena>1, $<cadena>3) }
     | expresionMultiplicativa OPERADOR_MULTIPLICATIVO expresionConversion  
     ;
 
@@ -187,11 +195,7 @@ declaracion: declaracionVariable
 
 /** Variables **/
 
-declaracionVariable: TIPO_DATO  listaDeclaradores  ';' {printf(" - TIPO: %s", $<cadena>1);} 
-    ;
-
-listaDeclaradores: declarador           { printf("\nLinea %i - DECLARACION - VARIABLE/S: %s", yylineno, $<cadena>1);   }
-    | listaDeclaradores ',' declarador  { printf(", %s", $<cadena>3);                                            }  
+declaracionVariable: TIPO_DATO  declarador  ';' { tipoAuxiliar = strdup($<cadena>1); tipoAuxiliar = agregadorDeclaradores(tipoAuxiliar); pushSimboloSinRepetir(identificadorAuxiliar, tipoAuxiliar, 0);} 
     ;
 
 declarador: decla                   
@@ -209,31 +213,30 @@ listaInicializadores: inicializador
 
 /** Funciones **/
 
-declaracionFuncion: TIPO_DATO  IDENTIFICADOR '(' listaParametros_ ')' ';'     { printf("\nLinea %i - DECLARACION - FUNCION: %s - TIPO: %s", yylineno, $<cadena>2, $<cadena>1);    }
-    | TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' sentenciaCompuesta    { printf("\nLinea %i - DEFINICION - FUNCION\: %s - TIPO\: %s", yylineno, $<cadena>2, $<cadena>1);   }
+declaracionFuncion: TIPO_DATO  IDENTIFICADOR '(' listaParametros_ ')' ';'   { pushSimboloSinRepetir($<cadena>2, $<cadena>1, 1);  pushParametros($<cadena>2); }
+    | TIPO_DATO IDENTIFICADOR '(' listaParametros_ ')' sentenciaCompuesta   { pushSimboloSinRepetir($<cadena>2, $<cadena>1, 1);  pushParametros($<cadena>2); }
     ;
 
-listaParametros: parametro { printf("\n%s", $<cadena>1);   }
+listaParametros: parametro         
     | listaParametros ',' parametro 
     ;
 
-parametro: TIPO_DATO decla
+parametro: TIPO_DATO decla { pushParametro(&tablaParametros, $<cadena>1); } 
     ;
 
 /** Extras **/
 
 decla: /* */
     | declaradorDirecto
-    | puntero declaradorDirecto // { printf(" (PUNTERO) ");  }
-    | '&' declaradorDirecto
+    | puntero declaradorDirecto
     ;
 
-puntero: '*'
-    | '*' puntero
+puntero: '*'      { contador.punteros++; }  
+    | '*' puntero { contador.punteros++; }
     ;
 
-declaradorDirecto: IDENTIFICADOR 
-    | declaradorDirecto '[' expresionConstante_ ']'   // { printf(" (ARREGLO) ");  }
+declaradorDirecto: IDENTIFICADOR                        { identificadorAuxiliar = strdup($<cadena>1); }
+    | declaradorDirecto '[' expresionConstante_ ']'     { contador.dimensiones++; }
     ;
 
 /* **************************************** SENTENCIAS **************************************** */ 
@@ -323,5 +326,13 @@ int main() {
     #endif 
     
     yyin = fopen("./test.c", "r");
+    printf("\n/* ********** Validaciones de simbolos ********** */");
     yyparse();
+
+    printf("\n/* ********** Tabla de simbolos ********** */");
+    mostrarSimbolos(tablaSimbolos);
+    
+    printf("\n\n/* ********** Doble declaracion ********** */");
+    mostrarSimbolos(tablaDobleDeclaracion);
+
 }
