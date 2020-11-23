@@ -69,12 +69,12 @@ SECUENCIA_ESCAPE_SIMPLE (a|b|f|n|r|t|v|\'|\"|\?|\\)
 
 [a-zA-Z_][a-zA-Z0-9_]*  { yylval.cadena = strdup(yytext); return IDENTIFICADOR;  }
 
-\"(([^\"]|\\\")*[^\\])?\"                                                                                   { yylval.cadena = strdup(yytext); return CONSTANTE_CADENA;      }
-{DIGITO_DECIMAL_SIN_CERO}{DIGITO_DECIMAL}*{SUFIJO_ENTERO}?                                                  { yylval.entero = atoi(yytext); return CONSTANTE_DECIMAL;       }
-0{DIGITO_OCTAL}*{SUFIJO_ENTERO}?                                                                            { yylval.entero = atoi(yytext); return CONSTANTE_OCTAL;         }
-0[xX]{DIGITO_HEXADECIMAL}+{SUFIJO_ENTERO}?                                                                  { yylval.entero = atoi(yytext); return CONSTANTE_HEXADECIMAL;   }
-\'([^\\\']|\\{SECUENCIA_ESCAPE_SIMPLE}|\\{DIGITO_OCTAL}{1,3}|\\x{DIGITO_HEXADECIMAL}{1,2})\'                { yylval.entero = atoi(yytext); return CONSTANTE_CARACTER;      }
-({CONSTANTE_FRACCION}{PARTE_EXPONENTE}?{SUFIJO_REAL}?|{CONSTANTE_FRACCION}{PARTE_EXPONENTE}{SUFIJO_REAL}?)  { yylval.real = strtol(yytext, NULL, 0); return CONSTANTE_REAL; }
+\"(([^\"]|\\\")*[^\\])?\"                                                                                   { yylval.cadena =   strdup(yytext);             return CONSTANTE_CADENA;        }
+{DIGITO_DECIMAL_SIN_CERO}{DIGITO_DECIMAL}*{SUFIJO_ENTERO}?                                                  { yylval.entero =   atoi(yytext);               return CONSTANTE_DECIMAL;       }
+0{DIGITO_OCTAL}*{SUFIJO_ENTERO}?                                                                            { yylval.entero =   atoi(yytext);               return CONSTANTE_OCTAL;         }
+0[xX]{DIGITO_HEXADECIMAL}+{SUFIJO_ENTERO}?                                                                  { yylval.entero =   atoi(yytext);               return CONSTANTE_HEXADECIMAL;   }
+\'([^\\\']|\\{SECUENCIA_ESCAPE_SIMPLE}|\\{DIGITO_OCTAL}{1,3}|\\x{DIGITO_HEXADECIMAL}{1,2})\'                { yylval.entero =   atoi(yytext);               return CONSTANTE_CARACTER;      }
+({CONSTANTE_FRACCION}{PARTE_EXPONENTE}?{SUFIJO_REAL}?|{CONSTANTE_FRACCION}{PARTE_EXPONENTE}{SUFIJO_REAL}?)  { yylval.real =     strtol(yytext, NULL, 0);    return CONSTANTE_REAL;          }
 
 . {printf("\nEl caracter %c no fue reconocido.", yytext[0]);}
 

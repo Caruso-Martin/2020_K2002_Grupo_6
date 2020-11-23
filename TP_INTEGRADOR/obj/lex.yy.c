@@ -929,32 +929,32 @@ YY_RULE_SETUP
 case 29:
 YY_RULE_SETUP
 #line 72 "../src/integrador.l"
-{ yylval.cadena = strdup(yytext); return CONSTANTE_CADENA;      }
+{ yylval.cadena =   strdup(yytext);             return CONSTANTE_CADENA;        }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 73 "../src/integrador.l"
-{ yylval.entero = atoi(yytext); return CONSTANTE_DECIMAL;       }
+{ yylval.entero =   atoi(yytext);               return CONSTANTE_DECIMAL;       }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 74 "../src/integrador.l"
-{ yylval.entero = atoi(yytext); return CONSTANTE_OCTAL;         }
+{ yylval.entero =   atoi(yytext);               return CONSTANTE_OCTAL;         }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 75 "../src/integrador.l"
-{ yylval.entero = atoi(yytext); return CONSTANTE_HEXADECIMAL;   }
+{ yylval.entero =   atoi(yytext);               return CONSTANTE_HEXADECIMAL;   }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 76 "../src/integrador.l"
-{ yylval.entero = atoi(yytext); return CONSTANTE_CARACTER;      }
+{ yylval.entero =   atoi(yytext);               return CONSTANTE_CARACTER;      }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 77 "../src/integrador.l"
-{ yylval.real = strtol(yytext, NULL, 0); return CONSTANTE_REAL; }
+{ yylval.real =     strtol(yytext, NULL, 0);    return CONSTANTE_REAL;          }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP

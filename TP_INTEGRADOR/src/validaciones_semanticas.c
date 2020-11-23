@@ -2,16 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* ************* COLORES PARA ERRORES ************* */
-
-#define C_RED     "\x1b[31m"
-#define C_GREEN   "\x1b[32m"
-#define C_YELLOW  "\x1b[33m"
-#define C_BLUE    "\x1b[34m"
-#define C_MAGENTA "\x1b[35m"
-#define C_CYAN    "\x1b[36m"
-#define C_RESET   "\x1b[0m"
-
 struct contadorDeclaradores {
     int punteros;
     int dimensiones;
@@ -57,7 +47,6 @@ void pushParametroSinRepetir(char*, char*);
 void pushSimboloSinRepetir(char*, char*, int);
 
 // CONTROL - OPERACION BINARIA
-int validacionTipos(char* identificadorA, char* identificadorB);
 
 // CONTROL - INVOCACION DE FUNCION
 int cantidadParametros(struct parametro**);
@@ -86,7 +75,6 @@ void pushParametros(char* identificador) {
     
     tablaParametros = NULL;
 }
-  
 void pushSimbolo(struct SYM_TBL** tabla, char* nuevoIdentificador, char* nuevoTipo, int nuevoTipoDeclaracion) { 
     struct SYM_TBL* nuevoNodo = (struct SYM_TBL*) malloc(sizeof(struct SYM_TBL)); 
 
@@ -114,7 +102,6 @@ char* agregadorDeclarador(char * tipoDato, char * declarador, int cantidad) {
     
     return temporal;
 }
-
 char* agregadorDeclaradores(char * tipoDato) {
     tipoDato = agregadorDeclarador(tipoDato, "*", contador.punteros);
     tipoDato = agregadorDeclarador(tipoDato, "[]", contador.dimensiones);
@@ -124,6 +111,7 @@ char* agregadorDeclaradores(char * tipoDato) {
 
     return tipoDato;
 }
+
 void eliminarDeclarador(char * tipoDato, char declarador){ 
   
     int j, n = strlen(tipoDato); 
@@ -231,30 +219,16 @@ void pushSimboloSinRepetir(char* nuevaCadena, char* nuevoTipo, int nuevaTipoDecl
 }
 
 /* *************..CONTROL - OPERACION BINARIA......************* */
-int validacionTipos(char* identificadorA, char* identificadorB) {
-    if(!estaDeclarado(identificadorA)){
-        printf("\nNo se ha declarado la variable: %s", identificadorA);
+int validacionTipos(char* tipoA, char* tipoB) {    
+        if(strcmp(tipoA, tipoB) && strstr(tipoA,"void") == NULL && strstr(tipoB, "void") == NULL) { // Tipos distintos, no void
+        printf("\nNota: Conversion implicita (%s a %s)\n", tipoB, tipoA);
         return 0;
-    }
-
-    if(!estaDeclarado(identificadorB)){
-        printf("\nNo se ha declarado la variable: %s", identificadorB);
-        return 0;
-    }
-
-    struct SYM_TBL* idA = obtenerIdentificador(identificadorA);
-    struct SYM_TBL* idB = obtenerIdentificador(identificadorB);
-
-    if(strcmp(idA->tipo, idB->tipo) && strstr(idA->tipo,"void") == NULL && strstr(idB->tipo, "void") == NULL) { // Tipos distintos, no void
-        printf("\nNota: Conversion implicita (Identificador: %s Tipo: %s - Identificador: %s Tipo: %s)\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
-        return 0;
-    } else if(strstr(idA->tipo, "void") != NULL || strstr(idB->tipo, "void") != NULL) { // Algun void
-        printf("\nError: no se puede declarar una variable de tipo void (Identificador: %s Tipo: %s - Identificador: %s Tipo: %s)\n", idA->identificador, idA->tipo, idB->identificador, idB->tipo);
+    } else if(strstr(tipoA, "void") != NULL || strstr(tipoB, "void") != NULL) { // Algun void
+        printf("\nError: no se puede declarar una variable de tipo void\n");
         
         return 1;
     }
-    
-    
+        
     return 0;
 }
 
@@ -302,8 +276,6 @@ int validacionInvocacion(struct SYM_TBL* invocacion){
 
     if(!estaDeclarado(temporal->identificador)){
         printf("\nAtencion: Invocacion sin declaracion previa - Funcion: %s\n", temporal->identificador);
-        
-        
         return 0;
     }
 

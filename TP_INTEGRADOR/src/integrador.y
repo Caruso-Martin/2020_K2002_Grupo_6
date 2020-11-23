@@ -14,7 +14,9 @@
     extern int yylineno;
 
     char* tipoAuxiliar = "";
+    char* tipoAuxiliar2 = "";
     char* identificadorAuxiliar = ""; 
+    int validacionBinaria = 0;
 
 %}
 
@@ -23,8 +25,6 @@
     int entero;
     float real;
 }
-
-//%error-verbose
 
 /* %token <tipo> LEXEMA */
 %token <cadena> IDENTIFICADOR
@@ -53,7 +53,6 @@
 // DECLARADORES
 %token <cadena> TIPO_DATO                           // void char short int long float double signed unsigned
 
-
 // PALABRAS RESERVADAS
 %token <cadena> IF
 %token <cadena> ELSE
@@ -74,7 +73,11 @@
 %type <cadena> declaracionVariable
 %type <cadena> declarador
 %type <cadena> decla
+%type <cadena> puntero
 %type <cadena> declaradorDirecto
+%type <cadena> expresionPrimaria
+
+%type <cadena> constante
 
 %%
 input: /* */
@@ -92,7 +95,7 @@ expresion: expresionAsignacion
     | expresion ',' expresionAsignacion
     ;
 
-expresionAsignacion: expresionCondicional 
+expresionAsignacion: expresionCondicional                       
     | expresionUnaria '=' expresionAsignacion 
     | expresionUnaria OPERADOR_ASIGNACION expresionAsignacion 
     ;
@@ -134,13 +137,13 @@ expresionCorrimiento: expresionAditiva
     ;
 
 expresionAditiva: expresionMultiplicativa 
-    | expresionAditiva '+' expresionMultiplicativa
-    | expresionAditiva '-' expresionMultiplicativa 
+    | expresionAditiva '+' expresionMultiplicativa  { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
+    | expresionAditiva '-' expresionMultiplicativa  { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
     ;
 
 expresionMultiplicativa: expresionConversion 
-    | expresionMultiplicativa '*' expresionConversion 
-    | expresionMultiplicativa OPERADOR_MULTIPLICATIVO expresionConversion  
+    | expresionMultiplicativa '*' expresionConversion                       { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
+    | expresionMultiplicativa OPERADOR_MULTIPLICATIVO expresionConversion   { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
     ;
 
 expresionConversion: expresionUnaria 
@@ -168,26 +171,26 @@ expresionSufijo: expresionPrimaria
     | expresionSufijo OPERADOR_INCREMENTO                       
     ;
 
-listaArgumentos: expresionAsignacion { pushParametro(&tablaParametros, $<cadena>1); } 
-    | listaArgumentos ',' expresionAsignacion { pushParametro(&tablaParametros, $<cadena>3); } 
+listaArgumentos: expresionAsignacion            { pushParametro(&tablaParametros, $<cadena>1); } 
+    | listaArgumentos ',' expresionAsignacion   { pushParametro(&tablaParametros, $<cadena>3); } 
     ;
 
-expresionPrimaria: IDENTIFICADOR 
-    | constante 
-    | CONSTANTE_CADENA 
+expresionPrimaria: IDENTIFICADOR    { tablaAuxiliar = obtenerIdentificador($<cadena>1); (validacionBinaria == 0) ? (tipoAuxiliar = tablaAuxiliar->tipo) : (tipoAuxiliar2 = tablaAuxiliar->tipo); validacionBinaria = 1; }  
+    | constante                     
+    | CONSTANTE_CADENA              { (validacionBinaria == 0) ? (tipoAuxiliar = "char*") : (tipoAuxiliar2 = "char*"); validacionBinaria = 1; }
     | '(' expresion ')'
     ;
 
 expresionConstante: expresionCondicional
-    ; //Las expresiones constantes pueden ser evaluadas durante la traduccion en lugar de durante la ejecucion.
+    ; 
 
-constante: CONSTANTE_DECIMAL             
-    | CONSTANTE_OCTAL               
-    | CONSTANTE_HEXADECIMAL       
-    | CONSTANTE_REAL                 
-    | CONSTANTE_CARACTER                         
+constante: CONSTANTE_DECIMAL   { (validacionBinaria == 0) ? (tipoAuxiliar = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }      
+    | CONSTANTE_OCTAL          { (validacionBinaria == 0) ? (tipoAuxiliar = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }
+    | CONSTANTE_HEXADECIMAL    { (validacionBinaria == 0) ? (tipoAuxiliar = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }
+    | CONSTANTE_REAL           { (validacionBinaria == 0) ? (tipoAuxiliar = "float") : (tipoAuxiliar2 = "float"); validacionBinaria = 1; }  
+    | CONSTANTE_CARACTER       { (validacionBinaria == 0) ? (tipoAuxiliar = "char" ) : (tipoAuxiliar2 = "char" ); validacionBinaria = 1; }
     ;
-
+ 
 
 /* **************************************** DECLARACIONES **************************************** */
 declaracion: declaracionVariable
@@ -325,15 +328,17 @@ int main() {
     #ifdef BISON_DEBUG
         yydebug = 1;
     #endif 
+     
     
     yyin = fopen("./test.c", "r");
-    printf("\n/* ********** Validaciones de simbolos ********** */");
+    printf("\n/* **********...Errores y advertencias....********* */");
+
     yyparse();
 
-    printf("\n/* ********** Tabla de simbolos ********** */");
-    mostrarSimbolos(tablaSimbolos);
-    
-    printf("\n\n/* ********** Doble declaracion ********** */");
+    printf("\n\n/* **********....Doble declaracion.....********** */");
     mostrarSimbolos(tablaDobleDeclaracion);
+
+    printf("\n\n/* **********.....Tabla de simbolos......********** */");
+    mostrarSimbolos(tablaSimbolos);
 
 }
