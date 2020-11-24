@@ -7,6 +7,7 @@ struct contadorDeclaradores {
     int dimensiones;
 } contador = {0, 0};
 
+int numeroLinea = 0;
 
 /* *************..ESTRUCTURA DE TABLA DE SIMBOLOS..************* */
 struct parametro {
@@ -221,10 +222,10 @@ void pushSimboloSinRepetir(char* nuevaCadena, char* nuevoTipo, int nuevaTipoDecl
 /* *************..CONTROL - OPERACION BINARIA......************* */
 int validacionTipos(char* tipoA, char* tipoB) {    
         if(strcmp(tipoA, tipoB) && strstr(tipoA,"void") == NULL && strstr(tipoB, "void") == NULL) { // Tipos distintos, no void
-        printf("\nNota: Conversion implicita (%s a %s)\n", tipoB, tipoA);
+        printf("\nLinea %i - Nota: Conversion implicita (%s a %s)\n", numeroLinea, tipoB, tipoA);
         return 0;
     } else if(strstr(tipoA, "void") != NULL || strstr(tipoB, "void") != NULL) { // Algun void
-        printf("\nError: no se puede declarar una variable de tipo void\n");
+        printf("\nLinea %i - Error: no se puede declarar una variable de tipo void\n", numeroLinea);
         
         return 1;
     }
@@ -256,6 +257,7 @@ int tipoParametrosCorrecto(struct SYM_TBL* invocacion){
     struct parametro* comparacion = obtenerParametros(invocacion->identificador);
 
     struct SYM_TBL* idA = obtenerIdentificador(temporal->tipoParametro);
+
     while (temporal != NULL && comparacion != NULL) {
         if(obtenerIdentificador(temporal->tipoParametro) != NULL)
             idA = obtenerIdentificador(temporal->tipoParametro);
@@ -275,20 +277,19 @@ int validacionInvocacion(struct SYM_TBL* invocacion){
     struct SYM_TBL* temporal = invocacion;
 
     if(!estaDeclarado(temporal->identificador)){
-        printf("\nAtencion: Invocacion sin declaracion previa - Funcion: %s\n", temporal->identificador);
+        printf("\nLinea %i - Atencion: Invocacion sin declaracion previa - Funcion: %s\n", numeroLinea, temporal->identificador);
         return 0;
     }
 
     if(!cantidadParametrosCorrecta(temporal)){
-        printf("\nAtencion: Invocacion con cantidad incorrecta de parametros - Funcion: %s\n", temporal->identificador);
+        printf("\nLinea %i - Atencion: Invocacion con cantidad incorrecta de parametros - Funcion: %s\n", numeroLinea, temporal->identificador);
         return 0;
     }
 
-    if(!tipoParametrosCorrecto(temporal)){
-        printf("\nAtencion: Invocacion con tipo/s incorrectos - Funcion: %s\n", temporal->identificador);
+    if(cantidadParametros(&temporal->tiposParametros) != 0 && !tipoParametrosCorrecto(temporal)){
+        printf("\nLinea %i - Atencion: Invocacion con tipo/s incorrectos - Funcion: %s\n", numeroLinea, temporal->identificador);
         return 0;
     }
-
     return 1;
 }
 

@@ -13,7 +13,8 @@
 
     extern int yylineno;
 
-    char* tipoAuxiliar = "";
+    char* tipoAuxiliar  = "";
+    char* tipoAuxiliar1 = "";
     char* tipoAuxiliar2 = "";
     char* identificadorAuxiliar = ""; 
     int validacionBinaria = 0;
@@ -137,13 +138,13 @@ expresionCorrimiento: expresionAditiva
     ;
 
 expresionAditiva: expresionMultiplicativa 
-    | expresionAditiva '+' expresionMultiplicativa  { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
-    | expresionAditiva '-' expresionMultiplicativa  { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
+    | expresionAditiva '+' expresionMultiplicativa  { numeroLinea = yylineno; validacionTipos(tipoAuxiliar1, tipoAuxiliar2); validacionBinaria = 0; }
+    | expresionAditiva '-' expresionMultiplicativa  { numeroLinea = yylineno; validacionTipos(tipoAuxiliar1, tipoAuxiliar2); validacionBinaria = 0; }
     ;
 
 expresionMultiplicativa: expresionConversion 
-    | expresionMultiplicativa '*' expresionConversion                       { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
-    | expresionMultiplicativa OPERADOR_MULTIPLICATIVO expresionConversion   { validacionTipos(tipoAuxiliar, tipoAuxiliar2); validacionBinaria = 0; }
+    | expresionMultiplicativa '*' expresionConversion                       { numeroLinea = yylineno; validacionTipos(tipoAuxiliar1, tipoAuxiliar2); validacionBinaria = 0; }
+    | expresionMultiplicativa OPERADOR_MULTIPLICATIVO expresionConversion   { numeroLinea = yylineno; validacionTipos(tipoAuxiliar1, tipoAuxiliar2); validacionBinaria = 0; }
     ;
 
 expresionConversion: expresionUnaria 
@@ -167,7 +168,7 @@ operadorUnario:'&'
 
 expresionSufijo: expresionPrimaria 
     | expresionSufijo '[' expresion ']' /* arreglo */           
-    | expresionSufijo '(' listaArgumentos_ ')' { pushSimbolo(&tablaAuxiliar, $<cadena>1, "-", 1);  tablaAuxiliar->tiposParametros = tablaParametros; validacionInvocacion(tablaAuxiliar); tablaParametros = NULL; tablaAuxiliar = NULL; }
+    | expresionSufijo '(' listaArgumentos_ ')' { numeroLinea = yylineno; pushSimbolo(&tablaAuxiliar, $<cadena>1, "-", 1);  tablaAuxiliar->tiposParametros = tablaParametros; validacionInvocacion(tablaAuxiliar);  tablaParametros = NULL; tablaAuxiliar = NULL; }
     | expresionSufijo OPERADOR_INCREMENTO                       
     ;
 
@@ -175,20 +176,20 @@ listaArgumentos: expresionAsignacion            { pushParametro(&tablaParametros
     | listaArgumentos ',' expresionAsignacion   { pushParametro(&tablaParametros, $<cadena>3); } 
     ;
 
-expresionPrimaria: IDENTIFICADOR    { tablaAuxiliar = obtenerIdentificador($<cadena>1); (validacionBinaria == 0) ? (tipoAuxiliar = tablaAuxiliar->tipo) : (tipoAuxiliar2 = tablaAuxiliar->tipo); validacionBinaria = 1; }  
+expresionPrimaria: IDENTIFICADOR    { tablaAuxiliar = obtenerIdentificador($<cadena>1); if(tablaAuxiliar != NULL) (validacionBinaria == 0) ? (tipoAuxiliar1 = tablaAuxiliar->tipo) : (tipoAuxiliar2 = tablaAuxiliar->tipo) ; validacionBinaria = 1; }  
     | constante                     
-    | CONSTANTE_CADENA              { (validacionBinaria == 0) ? (tipoAuxiliar = "char*") : (tipoAuxiliar2 = "char*"); validacionBinaria = 1; }
+    | CONSTANTE_CADENA              { (validacionBinaria == 0) ? (tipoAuxiliar1 = "char*") : (tipoAuxiliar2 = "char*"); validacionBinaria = 1; }
     | '(' expresion ')'
     ;
 
 expresionConstante: expresionCondicional
     ; 
 
-constante: CONSTANTE_DECIMAL   { (validacionBinaria == 0) ? (tipoAuxiliar = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }      
-    | CONSTANTE_OCTAL          { (validacionBinaria == 0) ? (tipoAuxiliar = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }
-    | CONSTANTE_HEXADECIMAL    { (validacionBinaria == 0) ? (tipoAuxiliar = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }
-    | CONSTANTE_REAL           { (validacionBinaria == 0) ? (tipoAuxiliar = "float") : (tipoAuxiliar2 = "float"); validacionBinaria = 1; }  
-    | CONSTANTE_CARACTER       { (validacionBinaria == 0) ? (tipoAuxiliar = "char" ) : (tipoAuxiliar2 = "char" ); validacionBinaria = 1; }
+constante: CONSTANTE_DECIMAL   { (validacionBinaria == 0) ? (tipoAuxiliar1 = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }      
+    | CONSTANTE_OCTAL          { (validacionBinaria == 0) ? (tipoAuxiliar1 = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }
+    | CONSTANTE_HEXADECIMAL    { (validacionBinaria == 0) ? (tipoAuxiliar1 = "int"  ) : (tipoAuxiliar2 = "int"  ); validacionBinaria = 1; }
+    | CONSTANTE_REAL           { (validacionBinaria == 0) ? (tipoAuxiliar1 = "float") : (tipoAuxiliar2 = "float"); validacionBinaria = 1; }  
+    | CONSTANTE_CARACTER       { (validacionBinaria == 0) ? (tipoAuxiliar1 = "char" ) : (tipoAuxiliar2 = "char" ); validacionBinaria = 1; }
     ;
  
 
@@ -225,7 +226,7 @@ listaParametros: parametro
     | listaParametros ',' parametro 
     ;
 
-parametro: TIPO_DATO decla { pushParametro(&tablaParametros, $<cadena>1); } 
+parametro: TIPO_DATO decla { tipoAuxiliar = strdup($<cadena>1); tipoAuxiliar = agregadorDeclaradores(tipoAuxiliar); pushParametro(&tablaParametros, tipoAuxiliar); } 
     ;
 
 /** Extras **/
@@ -328,7 +329,6 @@ int main() {
     #ifdef BISON_DEBUG
         yydebug = 1;
     #endif 
-     
     
     yyin = fopen("./test.c", "r");
     printf("\n/* **********...Errores y advertencias....********* */");
